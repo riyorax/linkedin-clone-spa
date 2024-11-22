@@ -1,21 +1,19 @@
-import http from "http";
+import express from "express";
+import cors from "cors";
+const app = express();
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 3000;
+const corsOptions = {
+  origin: "http://localhost:3001"
+};
 
-http
-  .createServer((req, res) => {
-    if (req.url === "/") {
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end("Hello World");
-    } else if (req.url === "/health") {
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end("OK");
-    } else {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("Not Found");
-    }
-  })
-  .listen(PORT)
-  .on("listening", () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
+app.use(cors(corsOptions));
+
+
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello from server!" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
