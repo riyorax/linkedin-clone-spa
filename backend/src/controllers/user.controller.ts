@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const userClient = new PrismaClient().users;
 
@@ -13,20 +14,14 @@ BigInt.prototype.toJSON = function () {
     return this.toString();
 };
 
-
-// getAllUsers
 export const getAllUsers = async (req, res) => {
     try {
-        // Fetch all users from the database
         const allUsers = await userClient.findMany();
-        
-        // Return the data in the response
+
         res.status(200).json({ data: allUsers });
     } catch (e) {
-        // Log the error for debugging purposes
         console.error("Error fetching users:", e);
 
-        // Send a specific error message in the response
         res.status(500).json({
             error: "Internal Server Error",
             message: e.message || "Something went wrong while fetching users."
@@ -34,8 +29,6 @@ export const getAllUsers = async (req, res) => {
     }
 };
 
-
-// getUserById
 export const getUserById = async (req, res) => {
     try {
         const user = await userClient.findUnique({
@@ -50,13 +43,10 @@ export const getUserById = async (req, res) => {
     }
 };
 
-
-// createUser
-export const createUser = async (req, res) => {
+export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        // Check for required fields
         if (!username || !email || !password) {
             return res.status(400).json({
                 error: "Missing required fields: username, email, or password.",
@@ -69,7 +59,6 @@ export const createUser = async (req, res) => {
             });
         }
 
-        // Hash password
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
 
@@ -101,8 +90,72 @@ export const createUser = async (req, res) => {
     }
 };
 
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-// updateUser
+        if (!email || !password) {
+            return res.status(400).json({
+                error: "Missing required fields: email or password.",
+            });
+        }
+
+        const user = await userClient.findFirst({
+            where: {
+                email,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                error: "Incorrect username or password",
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                error: "Incorrect username or password",
+            });
+        }
+
+        const payload = {
+            userId: user.id,
+            email: user.email,
+        };
+        
+        const generatedToken = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        res.cookie("token", generatedToken, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 1000,
+            sameSite: "strict",
+        });
+
+        res.status(200).json({
+            message: "Login successful"
+        });
+    }
+    catch (e) {
+        console.error(e);
+
+        res.status(500).json({
+            error: "Internal Server Error",
+            message: e.message || "An error occurred while logging in.",
+        });
+    }
+}
+
+export const logout = async (req, res) => {
+    res.clearCookie("token");
+    res.status(200).json({ message: "Logged out successfully" });
+}
+
 export const updateUser = async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
@@ -160,9 +213,8 @@ export const updateUser = async (req, res) => {
         res.status(200).json({ data: updatedUser });
 
     } catch (e) {
-        console.error(e);  // Log error for debugging purposes
+        console.error(e);
 
-        // Handle and return error to the client
         res.status(500).json({
             error: "Internal Server Error",
             message: e.message || "An error occurred while updating the user.",
@@ -170,8 +222,6 @@ export const updateUser = async (req, res) => {
     }
 };
 
-
-// deleteUser
 export const deleteUser = async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
