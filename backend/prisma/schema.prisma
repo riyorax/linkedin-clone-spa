@@ -61,7 +61,7 @@ model users {
   email                                                String               @unique @db.VarChar(255)
   password_hash                                        String               @db.VarChar(255)
   created_at                                           DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at                                           DateTime             @db.Timestamptz(6)
+  updated_at                                           DateTime             @default(now()) @db.Timestamptz(6)
   chat_chat_from_idTousers                             chat[]               @relation("chat_from_idTousers")
   chat_chat_to_idTousers                               chat[]               @relation("chat_to_idTousers")
   connection_connection_from_idTousers                 connection[]         @relation("connection_from_idTousers")

@@ -13,6 +13,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use(express.json());
+
 app.use("/users", userRouter);
 
 app.get("/api", (req, res) => {
