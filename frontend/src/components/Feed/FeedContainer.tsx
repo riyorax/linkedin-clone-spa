@@ -1,5 +1,6 @@
 import React from "react";
 import FeedCard from "./FeedCard";
+import FeedInput from "./FeedInput";
 
 interface FeedProps {
     user_name: string;
@@ -13,7 +14,9 @@ interface Props{
 
 const FeedContainer: React.FC<Props> = ({feeds})=>{
     return(
-        <div>
+        <div className="flex flex-col">
+            <FeedInput/>
+            <hr className="my-4 border border-gray-300"></hr>
             {feeds.map((feed, index) => (
                 <FeedCard
                 key={index}
