@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -48,7 +49,7 @@ const Login = () => {
                 <label htmlFor="password">Password</label>
                 <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
-            <button type="submit">Login</button>
+            <Button type="submit">Register</Button>
         </form>
     </section>
   )
