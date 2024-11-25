@@ -5,6 +5,7 @@ import Register from "./components/Register/Register";
 import Notfound from "./components/Error/Notfound";
 import Logout from "./components/Logout";
 import FeedContainer from "./components/Feed/FeedContainer";
+import FeedInput from "./components/Feed/FeedInput";
 
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
           <Route path="/profile"/>
           <Route path="/logout" element={<Logout/>} />
           <Route path="*" element={<Notfound/>}/>
-          <Route path="/feed" element={<FeedContainer feeds={feeds}/>}/>
+          <Route path="/feed" element={<FeedInput/>}/>
         </Routes>
       </Router>
     </>
