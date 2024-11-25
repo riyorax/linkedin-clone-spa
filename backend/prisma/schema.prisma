@@ -60,6 +60,10 @@ model users {
   username                                             String               @unique @db.VarChar(255)
   email                                                String               @unique @db.VarChar(255)
   password_hash                                        String               @db.VarChar(255)
+  full_name                                            String?              @db.VarChar(255)
+  work_history                                         String?              @db.Text
+  skills                                               String?              @db.Text
+  profile_photo_path                                   String               @default("https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png") @db.VarChar(255)
   created_at                                           DateTime             @default(now()) @db.Timestamptz(6)
   updated_at                                           DateTime             @default(now()) @db.Timestamptz(6)
   chat_chat_from_idTousers                             chat[]               @relation("chat_from_idTousers")

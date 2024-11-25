@@ -43,19 +43,38 @@ export const getUserById = async (req, res) => {
     }
 };
 
+export const generateToken = (payload, options = {}) => {
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+        throw new Error("JWT_SECRET is not defined");
+    }
+
+    const defaultOptions = {
+        expiresIn: "1h",
+    };
+
+    const jwtOptions = { ...defaultOptions, ...options };
+    return jwt.sign(payload, secret, jwtOptions);
+}
+
 export const register = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, name: fullname, password } = req.body;
 
-        if (!username || !email || !password) {
-            return res.status(400).json({
-                error: "Missing required fields: username, email, or password.",
+        if (!username || !email || !fullname || !password) {
+            return res.status(200).json({
+                success: false,
+                message: "Missing required fields: username or email or fullname or password",
+                error: "Missing required fields: username or email or fullname or password",
             });
         }
 
-        if (password.length < 6) {
-            return res.status(400).json({
-                error: "Password must be at least 6 characters long.",
+        if (password.length < 8) {
+            return res.status(200).json({
+                success: false,
+                message: "Password must be at least 8 characters long",
+                error: "Password must be at least 8 characters long",
             });
         }
 
@@ -66,26 +85,45 @@ export const register = async (req, res) => {
             data: {
                 username,
                 email,
+                full_name: fullname,
                 password_hash,
             },
         });
 
-        res.status(201).json({
-            message: "User created successfully",
-            data: newUser,
+        const payload = {
+            userId: newUser.id,
+            email: newUser.email,
+        };
+        
+        const generatedToken = generateToken(payload);        
+
+        res.cookie("token", generatedToken, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 1000,
+            sameSite: "strict",
         });
 
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            body: {
+                token: generatedToken,
+            },
+        });
     } catch (e) {
         if (e.code === 'P2002') {
             return res.status(409).json({
-                error: "User with the given username or email already exists.",
+                success: false,
+                message: e.message || "User with the given username or email already exists.",
+                error: e,
             });
         }
         console.error(e);
 
         res.status(500).json({
-            error: "Internal Server Error",
+            success: false,
             message: e.message || "Something went wrong while creating the user.",
+            error: "Internal Server Error",
         });
     }
 };
@@ -95,8 +133,10 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({
-                error: "Missing required fields: email or password.",
+            return res.status(200).json({
+                success: false,
+                message: "Missing required fields: email or password",
+                error: "Missing required fields: email or password",
             });
         }
 
@@ -107,16 +147,20 @@ export const login = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({
-                error: "Incorrect username or password",
+            return res.status(200).json({
+                success: false,
+                message: "Inccorect email or password",
+                error: "Inccorect email or password",
             });
         }
 
         const isMatch = await bcrypt.compare(password, user.password_hash);
 
         if (!isMatch) {
-            return res.status(401).json({
-                error: "Incorrect username or password",
+            return res.status(200).json({
+                success: false,
+                message: "Inccorect email or password",
+                error: "Inccorect email or password",
             });
         }
 
@@ -138,22 +182,30 @@ export const login = async (req, res) => {
         });
 
         res.status(200).json({
-            message: "Login successful"
+            success: true,
+            message: "Logged in successfully",
+            body: {
+                token: generatedToken,
+            },
         });
     }
     catch (e) {
         console.error(e);
 
         res.status(500).json({
-            error: "Internal Server Error",
-            message: e.message || "An error occurred while logging in.",
+            success: false,
+            message: "Internal Server Error",
+            error: e.message || "An error occurred while logging in.",
         });
     }
 }
 
 export const logout = async (req, res) => {
     res.clearCookie("token");
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({
+        success: true,
+        message: "Logged out successfully"
+    });
 }
 
 export const updateUser = async (req, res) => {

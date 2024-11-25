@@ -13,14 +13,22 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:3000/api/login", {
+      const response = await axios.post("http://localhost:3000/api/login", {
         email: email,
         password: password
       },
       { 
         withCredentials: true 
       });
+
+      const success = response.data.success;
+
+      if (success) {
         navigate("/profile");
+      }
+      else {
+        console.log(response.data);
+      }
     }
     catch (err) {
       console.log(err);
