@@ -6,6 +6,7 @@ import Register from "./components/Register/Register";
 import Notfound from "./components/Error/Notfound";
 import Logout from "./components/Logout";
 import FeedContainer from "./components/Feed/FeedContainer";
+import { Toaster } from "./components/ui/toaster";
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
           <Route path="/feed" element={<FeedContainer feeds={feeds}/>}/>
         </Routes>
       </Router>
+      <Toaster />
     </>
   )
 }

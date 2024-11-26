@@ -20,8 +20,6 @@ export const getAllUsers = async (req, res) => {
 
         res.status(200).json({ data: allUsers });
     } catch (e) {
-        console.error("Error fetching users:", e);
-
         res.status(500).json({
             error: "Internal Server Error",
             message: e.message || "Something went wrong while fetching users."
@@ -60,13 +58,15 @@ export const generateToken = (payload, options = {}) => {
 
 export const register = async (req, res) => {
     try {
-        const { username, email, name: fullname, password } = req.body;
+        const { username, email, name: fullname, password, confirmPassword } = req.body;
 
-        if (!username || !email || !fullname || !password) {
+        if (!username || !email || !fullname || !password || !confirmPassword) {
             return res.status(200).json({
                 success: false,
-                message: "Missing required fields: username or email or fullname or password",
-                error: "Missing required fields: username or email or fullname or password",
+                message: "Missing required fields: username or email or fullname or password or confirmPassword",
+                body: {
+                    token: null,
+                },
             });
         }
 
@@ -74,7 +74,19 @@ export const register = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: "Password must be at least 8 characters long",
-                error: "Password must be at least 8 characters long",
+                body: {
+                    token: null,
+                },
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(200).json({
+                success: false,
+                message: "Passwords do not match",
+                body: {
+                    token: null,
+                },
             });
         }
 
@@ -118,12 +130,11 @@ export const register = async (req, res) => {
                 error: e,
             });
         }
-        console.error(e);
 
         res.status(500).json({
             success: false,
             message: e.message || "Something went wrong while creating the user.",
-            error: "Internal Server Error",
+            error: e,
         });
     }
 };
@@ -149,8 +160,8 @@ export const login = async (req, res) => {
         if (!user) {
             return res.status(200).json({
                 success: false,
-                message: "Inccorect email or password",
-                error: "Inccorect email or password",
+                message: "Incorect email or password",
+                error: "Incorect email or password",
             });
         }
 
@@ -159,8 +170,8 @@ export const login = async (req, res) => {
         if (!isMatch) {
             return res.status(200).json({
                 success: false,
-                message: "Inccorect email or password",
-                error: "Inccorect email or password",
+                message: "Incorect email or password",
+                error: "Incorect email or password",
             });
         }
 
@@ -194,8 +205,8 @@ export const login = async (req, res) => {
 
         res.status(500).json({
             success: false,
-            message: "Internal Server Error",
-            error: e.message || "An error occurred while logging in.",
+            message: e.message ||  "Internal Server Error",
+            error: e,
         });
     }
 }

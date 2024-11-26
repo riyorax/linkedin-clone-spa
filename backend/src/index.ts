@@ -2,6 +2,7 @@ import express from "express";
 import apiRouter from "./routes/user.router";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 app.use(express.json());
 
