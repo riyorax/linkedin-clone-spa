@@ -12,6 +12,8 @@ RUN npm ci
 
 COPY --chown=node:node . .
 
+RUN npm run build
+
 ENV PORT=3000
 
 EXPOSE 3000
