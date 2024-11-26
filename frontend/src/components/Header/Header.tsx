@@ -10,11 +10,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Home, Users, List, Contact, MessageSquare, Search, Menu } from "lucide-react";
+import { Home, Users, List, Network, MessageSquare, Search, Menu } from "lucide-react";
 
 export function Header() {
     return (
-        <header className="border-b bg-white">
+        <header className="fixed top-0 left-0 w-full z-10 border-b bg-white">
              <div className="container mx-auto px-8 lg:px-60">
                 <div className="flex items-center justify-between lg:gap-20 h-12">
                     {/* Logo and Search */}
@@ -50,7 +50,7 @@ export function Header() {
                             <List className="h-5 w-5" color="gray" />
                         </NavLink>
                         <NavLink to="/" className="flex-shrink-0 hover:bg-gray-200 p-2 rounded-md">
-                            <Contact className="h-5 w-5" color="gray" />
+                            <Network className="h-5 w-5" color="gray" />
                         </NavLink>
                         <NavLink to="/" className="flex-shrink-0 hover:bg-gray-200 p-2 rounded-md">
                             <MessageSquare className="h-5 w-5" color="gray" />
@@ -79,11 +79,11 @@ export function Header() {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
-                                    <Link to="/" className="flex-shrink-0">Profile
+                                    <Link to="/profile" className="flex-shrink-0">Profile
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <Link to="/" className="flex-shrink-0">Sign Out
+                                    <Link to="/logout" className="flex-shrink-0">Sign Out
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -105,7 +105,7 @@ export function Header() {
                                         Users
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Contact className="mr-2 h-5 w-5" />
+                                        <Network className="mr-2 h-5 w-5" />
                                         Request
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
