@@ -1,8 +1,9 @@
 // import { ReactDOM } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import {Header} from "./components/Header/Header";
+import { Header } from "./components/Header/Header";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
+import Profile from "./pages/Profile";
 import Notfound from "./components/Error/Notfound";
 import Logout from "./components/Logout";
 import FeedContainer from "./components/Feed/FeedContainer";
@@ -37,20 +38,24 @@ function App() {
       content: "Exploring new ideas for my startup. Stay tuned! 💡",
     },
   ];
-  
+
   return (
     <>
       <Router>
-        <Routes>
-          <Route path="/" element={<Login/>}/>
-          <Route path="/header" element={<Header/>}/>
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/profile"/>
-          <Route path="/logout" element={<Logout/>} />
-          <Route path="*" element={<Notfound/>}/>
-          <Route path="/feed" element={<FeedContainer feeds={feeds}/>}/>
-        </Routes>
+        <Header />
+        <main className="main-content mt-16">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/header" element={<Header />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="*" element={<Notfound />} />
+            <Route path="/feed" element={<FeedContainer feeds={feeds} />} />
+          </Routes>
+        </main >
       </Router>
       <Toaster />
     </>
