@@ -1,24 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { Request, Response } from 'express';
+import * as userService from '../services/user.service';
+import * as authService from '../services/auth.service';
 import jwt from 'jsonwebtoken';
-
-const userClient = new PrismaClient().users;
-
-declare global {
-    interface BigInt {
-        toJSON(): string;
-    }
-}
-
-BigInt.prototype.toJSON = function () {
-    return this.toString();
-};
+import '../utils/bigIntUtils';
 
 export const getAllUsers = async (req, res) => {
     try {
-        const allUsers = await userClient.findMany();
-
-        res.status(200).json({ data: allUsers });
+        const allUsers = await userService.getAllUsers();
+        res.status(200).json({
+            data: allUsers
+        });
     } catch (e) {
         res.status(500).json({
             error: "Internal Server Error",
@@ -29,85 +20,35 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
     try {
-        const user = await userClient.findUnique({
-            where: {
-                id: parseInt(req.params.id),
-            },
+        const id = parseInt(req.params.id);
+        const user = await userService.getUserById(id);
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            data: user
         });
-        res.status(200).json({ data: user });
-    }
-    catch (e) {
-        res.json({ error: e });
+    } catch (e) {
+        res.status(500).json({
+            error: "Internal Server Error",
+            message: e.message || "Something went wrong while fetching users."
+        });
     }
 };
-
-export const generateToken = (payload, options = {}) => {
-    const secret = process.env.JWT_SECRET;
-
-    if (!secret) {
-        throw new Error("JWT_SECRET is not defined");
-    }
-
-    const defaultOptions = {
-        expiresIn: "1h",
-    };
-
-    const jwtOptions = { ...defaultOptions, ...options };
-    return jwt.sign(payload, secret, jwtOptions);
-}
 
 export const register = async (req, res) => {
     try {
         const { username, email, name: fullname, password, confirmPassword } = req.body;
-
-        if (!username || !email || !fullname || !password || !confirmPassword) {
-            return res.status(200).json({
-                success: false,
-                message: "Missing required fields: username or email or fullname or password or confirmPassword",
-                body: {
-                    token: null,
-                },
-            });
-        }
-
-        if (password.length < 8) {
-            return res.status(200).json({
-                success: false,
-                message: "Password must be at least 8 characters long",
-                body: {
-                    token: null,
-                },
-            });
-        }
-
-        if (password !== confirmPassword) {
-            return res.status(200).json({
-                success: false,
-                message: "Passwords do not match",
-                body: {
-                    token: null,
-                },
-            });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const password_hash = await bcrypt.hash(password, salt);
-
-        const newUser = await userClient.create({
-            data: {
-                username,
-                email,
-                full_name: fullname,
-                password_hash,
-            },
-        });
-
+        const newUser = await userService.createUser(username, email, fullname, password);
         const payload = {
             userId: newUser.id,
             email: newUser.email,
         };
-        
-        const generatedToken = generateToken(payload);        
+
+        const generatedToken = authService.generateToken(payload);
 
         res.cookie("token", generatedToken, {
             httpOnly: true,
@@ -124,7 +65,7 @@ export const register = async (req, res) => {
         });
     } catch (e) {
         if (e.code === 'P2002') {
-            return res.status(409).json({
+            res.status(409).json({
                 success: false,
                 message: e.message || "User with the given username or email already exists.",
                 error: e,
@@ -142,21 +83,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(200).json({
-                success: false,
-                message: "Missing required fields: email or password",
-                error: "Missing required fields: email or password",
-            });
-        }
-
-        const user = await userClient.findFirst({
-            where: {
-                email,
-            },
-        });
-
+        const user = await userService.getUserByEmail(email);
         if (!user) {
             return res.status(200).json({
                 success: false,
@@ -165,8 +92,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password_hash);
-
+        const isMatch = await authService.comparePassword(password, user.password_hash);
         if (!isMatch) {
             return res.status(200).json({
                 success: false,
@@ -179,12 +105,7 @@ export const login = async (req, res) => {
             userId: user.id,
             email: user.email,
         };
-        
-        const generatedToken = jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
+        const generatedToken = authService.generateToken(payload);
 
         res.cookie("token", generatedToken, {
             httpOnly: true,
@@ -201,8 +122,6 @@ export const login = async (req, res) => {
         });
     }
     catch (e) {
-        console.error(e);
-
         res.status(500).json({
             success: false,
             message: e.message ||  "Internal Server Error",
@@ -228,10 +147,7 @@ export const updateUser = async (req, res) => {
             return res.status(400).json({ error: "Invalid user ID" });
         }
 
-        const currentUser = await userClient.findUnique({
-            where: { id: userId },
-        });
-
+        const currentUser = await userService.getUserById(userId);
         if (!currentUser) {
             return res.status(404).json({
                 error: "User not found",
@@ -239,9 +155,7 @@ export const updateUser = async (req, res) => {
         }
 
         if (username && username !== currentUser.username) {
-            const existingUser = await userClient.findFirst({
-                where: { username },
-            });
+            const existingUser = await userService.getUserByUsername(username);
             if (existingUser) {
                 return res.status(409).json({
                     error: "Username already exists",
@@ -250,9 +164,7 @@ export const updateUser = async (req, res) => {
         }
 
         if (email && email !== currentUser.email) {
-            const existingUser = await userClient.findFirst({
-                where: { email },
-            });
+            const existingUser = await userService.getUserByEmail(email);
             if (existingUser) {
                 return res.status(409).json({
                     error: "Email already exists",
@@ -268,16 +180,10 @@ export const updateUser = async (req, res) => {
             password_hash: currentUser.password_hash,
         };
 
-        const updatedUser = await userClient.update({
-            where: { id: userId },
-            data: userData,
-        });
+        const updatedUser = await userService.updateUserData(userId, { username, email });
 
         res.status(200).json({ data: updatedUser });
-
     } catch (e) {
-        console.error(e);
-
         res.status(500).json({
             error: "Internal Server Error",
             message: e.message || "An error occurred while updating the user.",
@@ -285,17 +191,17 @@ export const updateUser = async (req, res) => {
     }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.id);
-        await userClient.delete({
-            where: {
-                id: userId,
-            },
+
+        await userService.deleteUserById(userId);
+
+        res.status(204).send();
+    } catch (e) {
+        res.status(500).json({
+            error: "Internal Server Error",
+            message: e.message
         });
-        res.status(204).json({ message: 'User deleted successfully' });
     }
-    catch (e) {
-        res.json({ error: e });
-    }
-}
+};
