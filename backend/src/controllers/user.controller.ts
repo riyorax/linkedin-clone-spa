@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
 import * as authService from '../services/auth.service';
-import jwt from 'jsonwebtoken';
+import * as connectionService from '../services/connection.service';
 import '../utils/bigIntUtils';
 
 export const getAllUsers = async (req, res) => {
@@ -20,21 +20,48 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         const user = await userService.getUserById(id);
         if (!user) {
             return res.status(404).json({
-                error: "User not found"
+                success: false,
+                message: "User not found",
+                error: null,
             });
         }
-
-        res.status(200).json({
-            data: user
-        });
+        const countConnection = await connectionService.countMutualConnections(id);
+        const response = {
+            success: true,
+            message: "User data fetched successfully",
+        };
+        const responseBody = {
+            access: req.access,
+            username: user.username,
+            name: user.full_name,
+            work_history: user.work_history,
+            skills: user.skills,
+            connection_count: countConnection,
+            profile_photo: user.profile_photo_path,
+        };
+        if (req.access === 'public') {
+            return res.status(200).json({
+                ...response,
+                body: responseBody,
+            });
+        } else {
+            return res.status(200).json({
+                ...response,
+                body: {
+                    ...responseBody,
+                    relevant_posts: null,
+                },
+            });
+        }       
     } catch (e) {
         res.status(500).json({
-            error: "Internal Server Error",
-            message: e.message || "Something went wrong while fetching users."
+            success: false,
+            message: e.message || "Something went wrong while fetching users.",
+            error: e,
         });
     }
 };
