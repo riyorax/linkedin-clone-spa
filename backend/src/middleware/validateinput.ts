@@ -13,6 +13,7 @@ export const isFilledUsername = (req, res) => {
 };
 
 export const isFilledEmail = (req, res) => {
+    console.log(req.body);
     if (!req.body.email) {
         return res.status(200).json({
             success: false,
@@ -85,30 +86,60 @@ export const comparePassword = (req, res) => {
 };
 
 export const emailExist = async (req, res) => {
-    const existingUser = await userService.getUserByEmail(req.body.email);
-    if (existingUser) {
-        return res.status(200).json({
-            success: false,
-            message: "User with the given email already exists.",
-            body: {
-                token: null,
-            },
-        });
+    try {
+        const existingUser = await userService.getUserByEmail(req.body.email);
+        if (existingUser) {
+            return res.status(200).json({
+                success: false,
+                message: "User with the given email already exists.",
+                body: {
+                    token: null,
+                },
+            });
+        }
+    } catch (e) {
+        throw e;
     }
 };
 
 export const usernameExist = async (req, res) => {
-    const existingUser = await userService.getUserByUsername(req.body.username);
-    if (existingUser) {
-        return res.status(200).json({
-            success: false,
-            message: "User with the given username already exists.",
-            body: {
-                token: null,
-            },
-        });
+    try {
+        const existingUser = await userService.getUserByUsername(req.body.username);
+        if (existingUser) {
+            return res.status(200).json({
+                success: false,
+                message: "User with the given username already exists.",
+                body: {
+                    token: null,
+                },
+            });
+        }
+    } catch (e) {
+        throw e;
     }
 };
+
+export const validateParamId = (req, res, next) => {
+    if (!req.params.id) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing required parameter: id",
+            error: null,
+        });
+    }
+
+    const reqId = parseInt(req.params.id);
+    if (!Number.isInteger(reqId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Parameter id must be an integer",
+            error: null,
+        });
+    }
+
+    req.params.id = reqId;
+    next()
+}
 
 export const validateRegister = async (req, res, next) => {
     if (await isFilledUsername(req, res)) return;
@@ -121,12 +152,12 @@ export const validateRegister = async (req, res, next) => {
     if (await usernameExist(req, res)) return;
     if (await emailExist(req, res)) return;
 
-    next(); 
+    next();
 };
 
 export const validateLogin = async (req, res, next) => {
     if (await isFilledEmail(req, res)) return;
     if (await isFilledPassword(req, res)) return;
 
-    next(); 
+    next();
 };

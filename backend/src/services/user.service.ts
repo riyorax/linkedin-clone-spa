@@ -4,54 +4,78 @@ import bcrypt from 'bcryptjs';
 const userClient = new PrismaClient().users;
 
 export const getAllUsers = async () => {
-    return await userClient.findMany();
+    try {
+        return await userClient.findMany();
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const getUserById = async (id: number) => {
-    return await userClient.findUnique({
-        where: { id },
-    });
+    try {
+        return await userClient.findUnique({
+            where: { id },
+        });
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const getUserByEmail = async (email: string) => {
-    return await userClient.findFirst({
-        where: { email },
-    });
+    try {
+        return await userClient.findFirst({
+            where: { email },
+        });
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const getUserByUsername = async (username: string) => {
-    return await userClient.findFirst({
-        where: { username },
-    });
+    try {
+        return await userClient.findFirst({
+            where: { username },
+        });
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const createUser = async (username: string, email: string, fullname: string, password: string) => {
-    const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash(password, salt);
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(password, salt);
 
-    return await userClient.create({
-        data: {
-            username,
-            email,
-            full_name: fullname,
-            password_hash,
-        },
-    });
+        return await userClient.create({
+            data: {
+                username,
+                email,
+                full_name: fullname,
+                password_hash,
+            },
+        });
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const updateUserData = async (id: number, updatedData: any) => {
-    return await userClient.update({
-        where: { id },
-        data: updatedData,
-    });
+    try {
+        return await userClient.update({
+            where: { id },
+            data: updatedData,
+        });
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const deleteUserById = async (id: number) => {
-    return await userClient.delete({
-        where: { id },
-    });
-};
-
-export const comparePassword = async (password: string, hash: string) => {
-    return await bcrypt.compare(password, hash);
+    try {
+        return await userClient.delete({
+            where: { id },
+        });
+    } catch (e) {
+        throw e;
+    }
 };
