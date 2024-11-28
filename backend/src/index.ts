@@ -1,5 +1,6 @@
 import express from "express";
-import apiRouter from "./routes/user.router";
+import userRouter from "./routes/user.router";
+import profileRouter from "./routes/profile.router";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -18,7 +19,8 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-app.use("/api", apiRouter);
+app.use("/api", userRouter);
+app.use("/api", profileRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -3,19 +3,18 @@ import {
     getAllUsers, 
     register, 
     login,
-    logout,
-    getUserById
+    logout
 } from '../controllers/user.controller';
 import { verifyToken } from '../middleware/verifytoken';
+import { validateRegister, validateLogin } from '../middleware/validateinput';
 
 
-const apiRouter = Router();
+const userRouter = Router();
 
-apiRouter.post('/login', login);
-apiRouter.post('/register', register);
-apiRouter.get('/users', verifyToken, getAllUsers);
-apiRouter.get('/profile/:id', getUserById);
-apiRouter.get('/logout', logout)
+userRouter.post('/login', validateLogin, login);
+userRouter.post('/register', validateRegister, register);
+userRouter.get('/users', verifyToken, getAllUsers);
+userRouter.get('/logout', logout)
 
 
-export default apiRouter;
+export default userRouter;
