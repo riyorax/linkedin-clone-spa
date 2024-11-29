@@ -2,6 +2,7 @@ import express from "express";
 import userRouter from "./routes/user.router";
 import profileRouter from "./routes/profile.router";
 import connectionRouter from "./routes/connection.router";
+import connectionRequestRouter from "./routes/connRequest.router";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use("/api", userRouter);
 app.use("/api", profileRouter);
 app.use("/api", connectionRouter);
+app.use("/api", connectionRequestRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

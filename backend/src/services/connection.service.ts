@@ -39,7 +39,7 @@ export const countMutualConnections = async (userId) => {
 
 export const getMutualConnection = async (userId) => {
     try {
-        const mutual = await prisma.$queryRaw<MutualConnectionResult[]>`
+        const mutual = await prisma.$queryRaw`
             SELECT u.full_name, u.profile_photo_path
             FROM users u
             JOIN (

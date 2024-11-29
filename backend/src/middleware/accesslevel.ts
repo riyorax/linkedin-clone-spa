@@ -1,6 +1,6 @@
 import * as connectionService from '../services/connection.service'
 
-export const accessProfile = async (req, res, next) => {
+export const accessLevel = async (req, res, next) => {
     try {
         let access;
         if (!req.user) {
@@ -8,8 +8,10 @@ export const accessProfile = async (req, res, next) => {
             access = "public";
         } else {
             // Authenticated
-            const authId = req.user.userId;
+            const authId = BigInt(req.user.userId);
             const reqId = req.params.id;
+            console.log(authId);
+            console.log(reqId);
             if (reqId !== authId) {
                 // Authenticated user is not the owner
                 const from = await connectionService.getConnection(authId, reqId);

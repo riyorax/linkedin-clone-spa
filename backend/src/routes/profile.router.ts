@@ -4,11 +4,11 @@ import {
 } from '../controllers/user.controller';
 import { verifyToken } from '../middleware/verifytoken';
 import { validateParamId } from '../middleware/validateinput';
-import { accessProfile } from '../middleware/accessprofile';
+import { accessLevel } from '../middleware/accesslevel';
 
 
 const profileRouter = Router();
 
-profileRouter.get('/profile/:id', verifyToken, validateParamId, accessProfile, getUserById);
+profileRouter.get('/profile/:id', verifyToken, validateParamId, accessLevel, getUserById);
 
 export default profileRouter;
