@@ -11,7 +11,7 @@ const FeedInputPopUp: React.FC = ({})=>{
     return (
         <div className="flex flex-col items-center w-full">
             <button className="flex-grow w-full h-12 px-4 border rounded-full text-left bg-white border-gray-400 hover:bg-gray-100" onClick={toggleOpen}>
-                <p className="font-semibold text-gray-700 px-2">Start a post, try writing with AI</p>   
+                <p className="font-semibold text-gray-700 px-1">Start a post, try writing with AI</p>   
             </button>
             {isOpen && (
                 <div className="fixed inset-0 flex items-start pt-10 justify-center bg-opacity-50 bg-black z-10" onClick={toggleOpen}>
