@@ -164,3 +164,33 @@ export const validateLogin = async (req, res, next) => {
 
     next();
 };
+
+export const validateFeedParam = async (req, res, next) => {
+    const { limit, cursor } = req.query;
+
+    if(!limit){
+        return res.status(400).json({
+            success: false,
+            message: "Missing required parameter: limit",
+            error: null,
+        })
+    }
+
+    if(isNaN(Number(limit))){
+        return res.status(400).json({
+            success: false,
+            message: "Limit must be a number",
+            error: null,
+        })
+    }
+
+    if (cursor && isNaN(Number(cursor))) {
+        return res.status(400).json({
+            success: false,
+            message: "Cursor must be a number",
+            error: null,
+        });
+    }
+
+    next();
+};

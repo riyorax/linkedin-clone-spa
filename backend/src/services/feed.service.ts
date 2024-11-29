@@ -2,10 +2,11 @@ import { PrismaClient } from "@prisma/client";
 
 const feedClient = new PrismaClient().feed
 
-export const getPaginatedFeeds = async (offset) => {
-    return await feedClient.findMany({
-        skip: parseInt(offset),
-        take: 10,
+export const getPaginatedFeeds = async ({cursor, limit = 10, currentUserId}) => {
+    const feeds = await feedClient.findMany({
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor} : undefined,
+        take: limit,
         orderBy: { created_at: 'desc'},
         include: {
             users: {
@@ -16,4 +17,8 @@ export const getPaginatedFeeds = async (offset) => {
             },
         },
     });
+    return feeds.map(feed => ({
+        ...feed,
+        isOwner: feed.user_id === currentUserId,
+    }));
 }
