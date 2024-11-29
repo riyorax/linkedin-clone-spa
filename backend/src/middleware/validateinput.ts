@@ -128,18 +128,21 @@ export const validateParamId = (req, res, next) => {
         });
     }
 
-    const reqId = parseInt(req.params.id);
-    if (!Number.isInteger(reqId)) {
+    let reqId;
+    try {
+        reqId = BigInt(req.params.id);
+    } catch (e) {
         return res.status(400).json({
             success: false,
-            message: "Parameter id must be an integer",
-            error: null,
+            message: "Parameter id must be a valid integer that can be converted to BigInt",
+            error: e,
         });
     }
 
     req.params.id = reqId;
-    next()
-}
+    next();
+};
+
 
 export const validateRegister = async (req, res, next) => {
     if (await isFilledUsername(req, res)) return;
