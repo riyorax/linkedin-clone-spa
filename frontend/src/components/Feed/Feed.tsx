@@ -13,7 +13,7 @@ interface Props{
     feeds : FeedProps[];
 }
 
-const FeedContainer: React.FC<Props> = ({feeds})=>{
+const Feed: React.FC<Props> = ({feeds})=>{
     return(
        <div className="flex flex-row justify-center min-w-max">
         <aside>
@@ -38,4 +38,4 @@ const FeedContainer: React.FC<Props> = ({feeds})=>{
     );
 };
 
-export default FeedContainer
+export default Feed

@@ -6,7 +6,7 @@ import Register from "./components/Register/Register";
 import Profile from "./pages/Profile";
 import Notfound from "./components/Error/Notfound";
 import Logout from "./components/Logout";
-import FeedContainer from "./components/Feed/FeedContainer";
+import FeedContainer from "./components/Feed/Feed";
 import { Toaster } from "./components/ui/toaster";
 
 
