@@ -20,3 +20,17 @@ export const getConnRequest = async (userId) => {
         throw e;
     }
 }
+
+export const insertConnRequest = async (fromId: number, toId: number) => {
+    try {
+        return await prisma.connection_request.create({
+            data: {
+                from_id: fromId,
+                to_id: toId,
+                created_at: new Date(),
+            }
+        })
+    } catch (e) {
+        throw e;        
+    }
+}
