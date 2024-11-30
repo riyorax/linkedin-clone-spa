@@ -58,3 +58,50 @@ export const getMutualConnection = async (userId) => {
         throw e;
     }
 }
+
+export const acceptConnection = async (fromId: number, toId: number) => {
+    try {
+        const newConnection = await prisma.$transaction(async (tx) => {
+            const isExist = await tx.connection_request.findFirst({
+                where: {
+                    from_id: fromId,
+                }
+            })
+
+            if (!isExist) {
+                return;
+            }
+            
+            // insert connection
+            const insertedConnections = await tx.connection.createManyAndReturn({
+                data: [
+                    { from_id: fromId, 
+                        to_id: toId, 
+                        created_at: new Date() 
+                    },
+                    { from_id: toId, 
+                        to_id: fromId, 
+                        created_at: new Date() 
+                    },
+                ],
+            });
+
+            // delete from request
+            await tx.connection_request.deleteMany({
+                where: {
+                    OR: [
+                        { from_id: fromId, to_id: toId },
+                        { from_id: toId, to_id: fromId },
+                    ],
+                },
+            });
+
+            return insertedConnections;
+        });
+
+        return newConnection;
+    } catch (e) {
+        console.log("heafkjnakjnre")
+        throw e;        
+    }
+}
