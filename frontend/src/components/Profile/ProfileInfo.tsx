@@ -1,44 +1,152 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin } from 'lucide-react';
+import { Edit, LogIn, UserMinus, UserPlus, Timer } from "lucide-react";
+import axios from "axios";
 
 interface ProfileProps {
-  full_name: string;
-  email: string;
+  id: string;
+  access: string;
+  status_request: string;
+  name: string;
   username: string;
-  profile_photo_path: string;
+  profile_photo: string;
+  connection_count: number;
 }
 
-const Profile: React.FC<ProfileProps> = ({ full_name, email, username, profile_photo_path }) => {
+const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, connection_count }) => {
+  const [acc, setAcc] = useState(access);
+  const [status, setStatus] = useState(status_request);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleAction = async (
+    endpoint: string,
+    method: "post" | "delete",
+    newAcc: string,
+    newStatus: string
+  ) => {
+    try {
+      setLoading(true);
+      const url = `http://localhost:3000/api/connection/${endpoint}/${id}`;
+      const response = method === "post" ? await axios.post(url, {}, { withCredentials: true }) : await axios.delete(url, { withCredentials: true });
+      if (response.status === 200) {
+        setAcc(newAcc);
+        setStatus(newStatus);
+      }
+    } catch (error) {
+      console.error(`Error during ${endpoint} action:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = () => {
+    console.log("Open edit modal");
+  };
+  
+  const buttonStyles = {
+    default: "border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105",
+    pending: "text-white bg-bluelinkedin rounded-full cursor-not-allowed hover:bg-bluehover",
+    reject: "border-2 border-red-500 text-red-500 bg-white rounded-full hover:bg-red-500 hover:text-white hover:scale-105",
+  };
+
+  const renderButton = () => {
+    if (status === "pending") {
+      return (
+        <div className="flex space-x-2 w-full sm:w-auto">
+          <Button className={buttonStyles.default} onClick={() => handleAction("accept", "post", "connected", "")} disabled={loading}>
+            <UserPlus size={20} />
+            <span>Accept</span>
+          </Button>
+          <Button className={buttonStyles.reject} onClick={() => handleAction("reject", "delete", "unconnected", "")} disabled={loading}>
+            <UserMinus size={20} />
+            <span>Reject</span>
+          </Button>
+        </div>
+      );
+    } else if (status === "sent") {
+      return (
+        <>
+          <Button className={buttonStyles.pending} disabled>
+            <Timer size={20} />
+            <span>Pending</span>
+          </Button>
+        </>
+      );
+    }
+
+    switch (acc) {
+      case "owner":
+        return (
+          <>
+            <Button className={buttonStyles.default} onClick={handleEdit}>
+              <Edit size={20} />
+              <span>Edit</span>
+            </Button>
+          </>
+        );
+      case "public":
+        return (
+          <>
+            <Button className={buttonStyles.default} onClick={() => navigate("/login")}>
+              <LogIn size={20} />
+              <span>Login To Connect</span>
+            </Button>
+          </>
+        );
+      case "connected":
+        return (
+          <>
+            <Button className={buttonStyles.default} onClick={() => handleAction("unconnect", "delete", "unconnected", "")} disabled={loading}>
+              <UserMinus size={20} />
+              <span>Unconnect</span>
+            </Button>
+          </>
+        );
+      default:
+        return (
+          <>
+            <Button className={buttonStyles.default} onClick={() => handleAction("request", "post", "unconnected", "sent")} disabled={loading}>
+              <UserPlus size={20} />
+              <span>Connect</span>
+            </Button>
+          </>
+        );
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
-      <div className="relative h-48">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="200" fill="none">
-          <rect width="1200" height="1200" fill="#EAEAEA" rx="3" />
+      <div className="relative h-32 sm:h-48">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none">
+          <rect width="100%" height="100%" fill="#EAEAEA" rx="3" />
         </svg>
       </div>
-      <CardContent className="relative pt-20 pb-4">
-        <Avatar className="absolute -top-16 left-4 w-32 h-32 border-4 border-white">
-          <AvatarImage src={profile_photo_path} alt={full_name} />
-          <AvatarFallback>{full_name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+      <CardContent className="relative pt-16 sm:pt-20 pb-4">
+        <Avatar className="absolute -top-12 sm:-top-16 left-4 w-24 h-24 sm:w-32 sm:h-32 border-4 border-white">
+          <AvatarImage src={profile_photo} alt={name} />
+          <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
         </Avatar>
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold">{full_name}</h2>
-            <p className="text-xl text-muted-foreground">{email}</p>
-            <div className="flex items-center text-muted-foreground">
-              <MapPin size={16} className="mr-1" />
-              <span>{username}</span>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <div className="space-y-1 mb-4 sm:mb-0">
+            <h2 className="text-sm sm:text-xl font-bold">{name}</h2>
+            <div className="flex items-center text-muted-foreground text-gray-500 text-[12px] sm:text-sm">
+              <span>@{username}</span>
+            </div>
+            <div className="flex items-center text-bluelinkedin font-semibold text-[12px] sm:text-sm">
+              <Link to="/" className="text-bluelinkedin hover:text-bluehover hover:scale-105">
+                {connection_count} connections
+              </Link>
             </div>
           </div>
-          <Button>Connect</Button>
+          {renderButton()}
         </div>
       </CardContent>
     </Card>
   );
 };
 
-export default Profile;
-
+export default ProfileInfo;

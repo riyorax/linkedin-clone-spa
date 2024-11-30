@@ -8,7 +8,9 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			bglinkedin: '#f4f2ee'
+  			bglinkedin: '#f4f2ee',
+			bluelinkedin: '#0077B5',
+			bluehover: '#005C8E',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

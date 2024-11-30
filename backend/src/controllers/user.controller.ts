@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { request, Request, Response } from 'express';
 import * as userService from '../services/user.service';
 import * as authService from '../services/auth.service';
 import * as connectionService from '../services/connection.service';
+import * as connRequestService from '../services/connrequest.service';
 import '../utils/bigIntUtils';
 
 export const getAllUsers = async (req, res) => {
@@ -35,18 +36,38 @@ export const getUserById = async (req, res) => {
             message: "User data fetched successfully",
         };
         const responseBody = {
-            access: req.access,
             username: user.username,
             name: user.full_name,
             work_history: user.work_history,
             skills: user.skills,
             connection_count: countConnection,
             profile_photo: user.profile_photo_path,
+            access: req.access,
         };
-        if (req.access === 'public') {
+
+        if (req.access === "public") {
             return res.status(200).json({
                 ...response,
                 body: responseBody,
+            });
+        } else if (req.access === "unconnected") {
+            const statusRequest = await connRequestService.getConnRequest(id, req.user.userId);
+            let request = "";
+            if (statusRequest) {
+                request = "pending";
+            } else {
+                const sendRequest = await connRequestService.getConnRequest(req.user.userId, id);
+                if (sendRequest) {
+                    request = "sent";
+                }
+            }
+            return res.status(200).json({
+                ...response,
+                body: {
+                    ...responseBody,
+                    relevant_posts: null,
+                    status_request: request,
+                },
             });
         } else {
             return res.status(200).json({
@@ -56,7 +77,7 @@ export const getUserById = async (req, res) => {
                     relevant_posts: null,
                 },
             });
-        }       
+        }
     } catch (e) {
         res.status(500).json({
             success: false,
@@ -151,7 +172,7 @@ export const login = async (req, res) => {
     catch (e) {
         res.status(500).json({
             success: false,
-            message: e.message ||  "Internal Server Error",
+            message: e.message || "Internal Server Error",
             error: e,
         });
     }

@@ -6,39 +6,63 @@ import Skills from "@/components/Profile/Skills";
 import Experience from "@/components/Profile/Experience";
 
 interface ProfileData {
-  id: string;
+  access: string;
+  status_request: string;
   username: string;
-  full_name: string;
-  email: string;
-  work_history: { role: string; company: string; duration: string }[] | null;
-  skills: string[] | null;
-  profile_photo_path: string;
+  name: string;
+  work_history: string;
+  skills: string;
+  connection_count: number;
+  profile_photo: string;
+  relevant_posts: string[] | null;
 }
 
 const ProfilePage: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
+      if (!id) {
+        setError("Profile ID is missing.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get(`http://localhost:3000/api/profile/${id}`);
-        const apiData = response.data.data;
+        setLoading(true);
+        setError(null);
 
-        const mappedData: ProfileData = {
-          id: apiData.id,
-          username: apiData.username,
-          full_name: apiData.full_name,
-          email: apiData.email,
-          work_history: apiData.work_history || [],
-          skills: apiData.skills || [],
-          profile_photo_path: apiData.profile_photo_path,
-        };
+        const response = await axios.get(`http://localhost:3000/api/profile/${id}`, {
+          withCredentials: true,
+        });
 
-        setProfileData(mappedData);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+        if (response.status === 200 && response.data.success) {
+          const apiData = response.data.body;
+
+          const mappedData: ProfileData = {
+            access: apiData.access || "",
+            status_request: apiData.status_request || "",
+            username: apiData.username || "",
+            name: apiData.name || "",
+            work_history: apiData.work_history || "",
+            skills: apiData.skills || "",
+            connection_count: Number(apiData.connection_count) || 0,
+            profile_photo: apiData.profile_photo || "",
+            relevant_posts: apiData.relevant_posts || null,
+          };
+
+          setProfileData(mappedData);
+        } else {
+          throw new Error(response.data.message || "Failed to fetch profile data.");
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred.";
+        console.error("Error fetching profile:", errorMessage);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -47,27 +71,37 @@ const ProfilePage: React.FC = () => {
     fetchProfileData();
   }, [id]);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (!profileData) {
-    return <p>Profile not found</p>;
-  }
+  const renderPage = () => {
+    if (loading) {
+      return <p>Loading profile...</p>;
+    } else if (error) {
+      return <p>Error: {error}</p>;
+    } else if (!profileData) {
+      return <p>Profile not found.</p>;
+    } else {
+      return (
+        <>
+          <ProfileInfo
+            id={id as string}
+            access={profileData.access}
+            status_request={profileData.status_request}
+            name={profileData.name}
+            username={profileData.username}
+            profile_photo={profileData.profile_photo}
+            connection_count={profileData.connection_count}
+          />
+          <Experience experience={profileData.work_history} />
+          <Skills skills={profileData.skills} />
+        </>
+      );
+    }
+  };
 
   return (
-    <div className="mx-auto px-8 lg:px-60 space-y-6">
-      <ProfileInfo
-        full_name={profileData.full_name}
-        email={profileData.email}
-        username={profileData.username}
-        profile_photo_path={profileData.profile_photo_path}
-      />
-      {profileData.work_history && <Experience work_history={profileData.work_history} />}
-      {profileData.skills && <Skills skills={profileData.skills} />}
+    <div className="container mx-auto px-8 lg:px-60 space-y-2">
+      {renderPage()}
     </div>
   );
 };
 
 export default ProfilePage;
-

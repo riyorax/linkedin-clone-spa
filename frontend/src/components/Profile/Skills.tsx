@@ -1,26 +1,23 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Settings } from 'lucide-react';
 
 interface SkillsProps {
-  skills: string[];
+  skills: string;
 }
 
 const Skills: React.FC<SkillsProps> = ({ skills }) => {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <h3 className="text-xl font-semibold mb-4">Skills</h3>
-        <div className="flex flex-wrap gap-2">
-          {skills.map((skill, index) => (
-            <span key={index} className="bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm">
-              {skill}
-            </span>
-          ))}
-        </div>
+    <Card className="overflow-hidden">
+      <CardContent className="p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center">
+          <Settings size={20} className="mr-2" />
+          <span>Skills</span>
+        </h3>
+        <p className="text-sm">{skills || "No skills listed yet."}</p> 
       </CardContent>
     </Card>
   );
 };
 
 export default Skills;
-

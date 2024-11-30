@@ -43,7 +43,7 @@ function App() {
     <>
       <Router>
         <Header />
-        <main className="main-content mt-16">
+        <main className="main-content mt-16 pb-2 left-0 w-full h-full z-10 border-b">
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/header" element={<Header />} />

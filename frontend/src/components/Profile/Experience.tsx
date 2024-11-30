@@ -3,29 +3,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase } from 'lucide-react';
 
 interface ExperienceProps {
-  work_history: { role: string; company: string; duration: string }[];
+  experience: string;
 }
 
-const Experience: React.FC<ExperienceProps> = ({ work_history }) => {
+const Experience: React.FC<ExperienceProps> = ({ experience }) => {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <h3 className="text-xl font-semibold mb-4">Experience</h3>
-        {work_history.map((job, index) => (
-          <div key={index} className="mb-4">
-            <div className="flex items-center">
-              <Briefcase size={20} className="mr-2" />
-              <div>
-                <h4 className="font-semibold">{job.role}</h4>
-                <p className="text-muted-foreground">{job.company} • {job.duration}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+    <Card className="overflow-hidden">
+      <CardContent className="p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center">
+          <Briefcase size={20} className="mr-2" />
+          <span>Experience</span>
+        </h3>
+        <p className="text-sm">{experience || "No experience listed yet."}</p>
       </CardContent>
     </Card>
   );
 };
 
 export default Experience;
-

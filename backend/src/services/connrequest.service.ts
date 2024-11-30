@@ -2,7 +2,22 @@ import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient();
 
-export const getConnRequest = async (userId) => {
+export const getConnRequest = async (fromId, toId) => {
+    try {
+        const connRequest = await prisma.connection_request.findFirst({
+            where: {
+                from_id: fromId,
+                to_id: toId,
+            }
+        })
+        
+        return connRequest;
+    } catch (e) {
+        throw e;
+    }
+}
+
+export const getConnRequestUser = async (userId) => {
     try {
         const connRequest = await prisma.$queryRaw`
             SELECT u.full_name, u.profile_photo_path

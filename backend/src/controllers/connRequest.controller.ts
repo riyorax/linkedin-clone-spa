@@ -4,7 +4,7 @@ export const getConnRequest = async (req, res) => {
     try {
         if (req.user !== null) {
             const id = parseInt(req.user.userId);
-            const connRequest = await connRequestService.getConnRequest(id);
+            const connRequest = await connRequestService.getConnRequestUser(id);
             return res.status(200).json({
                 success: true,
                 message: "Connection request fetched successfully",
