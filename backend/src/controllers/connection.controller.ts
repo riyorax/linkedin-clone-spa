@@ -22,6 +22,15 @@ export const getMutualConnection = async (req: Request, res: Response) => {
 
 export const acceptConnection = async (req, res) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "You're not authenticated, log in to continue",
+                error: null,
+            })
+
+        }
+
         const newConnection = await connectionService.acceptConnection(req.params.id, req.user.userId);
         if (!newConnection) {
             return res.status(400).json({
@@ -33,7 +42,7 @@ export const acceptConnection = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Connection accepted successfully",
+            message: "Connection request accepted successfully",
             body: {
                 newConnection: newConnection,
             },

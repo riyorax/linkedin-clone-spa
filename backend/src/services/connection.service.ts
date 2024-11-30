@@ -62,16 +62,18 @@ export const getMutualConnection = async (userId) => {
 export const acceptConnection = async (fromId: number, toId: number) => {
     try {
         const newConnection = await prisma.$transaction(async (tx) => {
+            // validate request connection
             const isExist = await tx.connection_request.findFirst({
                 where: {
                     from_id: fromId,
+                    to_id: toId,
                 }
             })
 
             if (!isExist) {
                 return;
             }
-            
+
             // insert connection
             const insertedConnections = await tx.connection.createManyAndReturn({
                 data: [

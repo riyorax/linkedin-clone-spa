@@ -35,3 +35,37 @@ export const insertConnRequest = async (fromId: number, toId: number) => {
         throw e;        
     }
 }
+
+export const deleteConnRequest = async (fromId: number, toId: number) => {
+    try {
+        const deleted = await prisma.$transaction(async (tx) => {
+            // validate request connection
+            const isExist = await tx.connection_request.findFirst({
+                where: {
+                    from_id: fromId,
+                    to_id: toId,
+                }
+            })
+
+            if (!isExist) {
+                return;
+            }
+
+            // delete from request
+            const deleted = await tx.connection_request.delete({
+                where: {
+                    from_id_to_id: {
+                        from_id: fromId,
+                        to_id: toId,
+                    },
+                },
+            });
+
+            return deleted;
+        });
+
+        return deleted;
+    } catch (e) {
+        throw e;        
+    }
+}

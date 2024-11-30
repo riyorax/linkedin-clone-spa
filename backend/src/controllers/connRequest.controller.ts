@@ -66,3 +66,37 @@ export const insertConnRequest = async (req, res) => {
         });
     }
 }
+
+export const deleteConnRequest = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "You're not authenticated, log in to continue",
+                error: null,
+            })
+        }
+        const deleted = await connRequestService.deleteConnRequest(req.params.id, req.user.userId);
+        if (!deleted) {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot reject this connection request",
+                error: null,
+            })            
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Connection request rejected successfully",
+            body: {
+                deleted: deleted,
+            },
+        });
+    } catch (e) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong while rejecting connections request.",
+            error: e,
+        });
+    }
+}
