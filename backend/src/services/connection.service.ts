@@ -103,7 +103,40 @@ export const acceptConnection = async (fromId: number, toId: number) => {
 
         return newConnection;
     } catch (e) {
-        console.log("heafkjnakjnre")
+        throw e;        
+    }
+}
+
+export const deleteConnection = async (fromId: number, toId: number) => {
+    try {
+        const deleted = await prisma.$transaction(async (tx) => {
+            // validate request connection
+            const isExist = await tx.connection.findFirst({
+                where: {
+                    from_id: fromId,
+                    to_id: toId,
+                }
+            })
+
+            if (!isExist) {
+                return;
+            }
+
+            // delete from request
+            const deleted = await tx.connection.deleteMany({
+                where: {
+                    OR: [
+                        { from_id: fromId, to_id: toId },
+                        { from_id: toId, to_id: fromId },
+                    ],
+                },
+            });
+
+            return deleted;
+        });
+    
+        return deleted;
+    } catch (e) {
         throw e;        
     }
 }

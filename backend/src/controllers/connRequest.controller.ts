@@ -54,7 +54,7 @@ export const insertConnRequest = async (req, res) => {
         } else {
             res.status(400).json({
                 success: false,
-                message: "Cannot connected to user",
+                message: "Cannot sent connection request to user",
                 error: null,
             })        
         }
