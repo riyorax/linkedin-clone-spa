@@ -8,11 +8,12 @@ export const getConnRequest = async (userId) => {
             SELECT u.full_name, u.profile_photo_path
              FROM users u
              JOIN (
-                SELECT r.from_id
+                SELECT r.from_id, r.created_at
                 FROM connection_request r
                 WHERE r.to_id = ${userId}
              ) res
-             ON u.id = res.from_id;
+             ON u.id = res.from_id
+             ORDER BY res.created_at;
             `
         
         return connRequest;

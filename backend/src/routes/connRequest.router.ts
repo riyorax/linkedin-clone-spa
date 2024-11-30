@@ -9,7 +9,7 @@ import {accessLevel} from '../middleware/accesslevel'
 
 const connRequestRouter = Router();
 
-connRequestRouter.get('/connectionrequest/:id', verifyToken, validateParamId, accessLevel, getConnRequest);
-connRequestRouter.post('/connectionrequest/:id', verifyToken, validateParamId, accessLevel, insertConnRequest);
+connRequestRouter.get('/connection/request', verifyToken, getConnRequest);
+connRequestRouter.post('/connection/request/:id', validateParamId, verifyToken, accessLevel, insertConnRequest);
 
 export default connRequestRouter;

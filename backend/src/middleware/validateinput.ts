@@ -13,7 +13,6 @@ export const isFilledUsername = (req, res) => {
 };
 
 export const isFilledEmail = (req, res) => {
-    console.log(req.body);
     if (!req.body.email) {
         return res.status(200).json({
             success: false,
@@ -134,7 +133,7 @@ export const validateParamId = (req, res, next) => {
     } catch (e) {
         return res.status(400).json({
             success: false,
-            message: "Parameter id must be a valid integer that can be converted to BigInt",
+            message: "Invalid parameter: 'id'",
             error: e,
         });
     }

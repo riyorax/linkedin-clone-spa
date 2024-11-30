@@ -9,6 +9,6 @@ import { accessLevel } from '../middleware/accesslevel';
 
 const profileRouter = Router();
 
-profileRouter.get('/profile/:id', verifyToken, validateParamId, accessLevel, getUserById);
+profileRouter.get('/profile/:id', validateParamId, verifyToken, accessLevel, getUserById);
 
 export default profileRouter;
