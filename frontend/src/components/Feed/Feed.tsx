@@ -3,8 +3,12 @@ import FeedCard from "./FeedCard";
 import FeedInput from "./FeedInput";
 import ProfileSidebar from "../Profile/ProfileSidebar";
 import axios from "axios";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
+interface Users {
+    full_name: string;
+    profile_photo_path: string;
+}
 interface FetchFeedsParams {
     pageParam: number;
     limit: number;
@@ -12,8 +16,7 @@ interface FetchFeedsParams {
 
 interface Feed {
     id: number;
-    user_name: string;
-    user_profile: string;
+    users: Users;
     content: string;
 }
 
@@ -23,13 +26,20 @@ interface FeedResponse {
 }
 
 const fetchFeeds = async ({ pageParam = 0, limit = 10 }: FetchFeedsParams): Promise<FeedResponse> => {
-    const { data } = await axios.get("/api/feed", {
+    const { data } = await axios.get("http://localhost:3000/api/feed", {
         params: {
             cursor: pageParam > 0 ? pageParam : undefined,
             limit,
         },
     });
     return data;
+};
+
+const fetchSelfProfile = async () => {
+    const response = await axios.get("http://localhost:3000/api/self/profile", {
+        withCredentials: true
+    });
+    return response.data.body;
 };
 
 const Feed: React.FC = () => {
@@ -48,16 +58,26 @@ const Feed: React.FC = () => {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
 
+    const { 
+        data: profile, 
+        isLoading: profileLoading, 
+        error: profileError 
+    } = useQuery({
+        queryKey: ['profile'],
+        queryFn: fetchSelfProfile
+    });
+
     const feeds = data?.pages.flatMap((page) => page.data) || [];
 
     return (
-        <div className="flex flex-row justify-center min-w-max">
-            <aside>
+        <div className="flex flex-row justify-center min-w-max space-x-5">
+            <aside className="w-64">
                 <ProfileSidebar
-                    full_name="asep"
-                    username="asepgemink"
-                    profile_photo_path="p"
-                />
+                    full_name={profile?.name}
+                    username={profile?.username}
+                    profile_photo_path={profile?.profile_photo}
+                    isLoading={profileLoading}
+                />  
             </aside>
             <div className="flex flex-col flex-grow max-w-xl w-full">
                 <FeedInput />
@@ -65,8 +85,8 @@ const Feed: React.FC = () => {
                 {feeds.map((feed) => (
                     <FeedCard
                         key={feed.id}
-                        user_name={feed.user_name}
-                        user_profile={feed.user_profile}
+                        user_name={feed.users.full_name}
+                        user_profile={feed.users.profile_photo_path}
                         content={feed.content}
                     />
                 ))}

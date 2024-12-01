@@ -1,12 +1,59 @@
 import React from "react";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+
+
+const addFeeds  = async ({ content }: {content: string}) => {
+    const response = await axios.post("http://localhost:3000/api/feed", {
+        content: content,
+    },
+    { 
+        withCredentials: true
+    });
+    console.log("data response: ",response)
+    return response.data;
+};
 
 const FeedInputPopUp: React.FC = ({})=>{
     const [isOpen, setIsOpen] = useState(false);
+    const [content, setContent] = useState("");
+    const queryClient = useQueryClient();
+    const toast = useToast()
 
     const toggleOpen = () =>{
         setIsOpen(!isOpen);
     };
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setContent(e.target.value);
+    }
+
+    const feedMutation = useMutation({
+        mutationFn: addFeeds,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["feeds"] });
+            setContent("");
+            setIsOpen(false);
+            toast.toast({
+                title: "Success",
+                description: "Your post has been published!",
+            });
+        },
+        onError: (error) => {
+            toast.toast({
+                title: "Error",
+                description: "Failed to create post. Please try again.",
+                variant: "destructive",
+            });
+        }
+    })
+
+    const handleSubmit = () => {
+        if (!content.trim()) return;
+        feedMutation.mutate({ content });
+    }
 
     return (
         <div className="flex flex-col items-center w-full">
@@ -27,10 +74,10 @@ const FeedInputPopUp: React.FC = ({})=>{
                                 ✕
                             </button>
                         </div>
-                        <textarea placeholder="What do you want to talk about?" className="w-full mt-4 rounded-lg p-3 resize-none placeholder-gray-600 focus:outline-none" rows={4}></textarea>
+                        <textarea placeholder="What do you want to talk about?" className="w-full mt-4 rounded-lg p-3 resize-none placeholder-gray-600 focus:outline-none" rows={4} value={content} onChange={handleChange}></textarea>
                         <div className="flex items-center justify-end mt-4">
-                            <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600">
-                                Post
+                            <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600" onClick={handleSubmit}>
+                                {feedMutation.isPending ? "Posting..." : "Post"}
                             </button>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ import connectionRequestRouter from "./routes/connRequest.router";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import feedRouter from "./routes/feed.router";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/api", userRouter);
 app.use("/api", profileRouter);
 app.use("/api", connectionRouter);
 app.use("/api", connectionRequestRouter);
+app.use("/api", feedRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

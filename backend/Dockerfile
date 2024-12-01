@@ -13,6 +13,7 @@ RUN npm ci
 COPY --chown=node:node . .
 
 RUN npm run build
+RUN npx prisma generate
 
 ENV PORT=3000
 

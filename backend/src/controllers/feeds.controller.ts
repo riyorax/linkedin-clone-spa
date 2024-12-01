@@ -5,19 +5,38 @@ import '../utils/bigIntUtils';
 
 export const getFeedsPaginated = async (req, res) => {
     try{
-        const currentUserId = req.user.id;
         const limit = parseInt(req.query.limit) || 10;
         const cursor = req.query.cursor ? parseInt(req.query.cursor) : undefined;
 
-        const feeds = await feedsService.getPaginatedFeeds({limit, cursor, currentUserId});
+        const feeds = await feedsService.getPaginatedFeeds({limit, cursor});
 
-        res.status(200).json({
+        return res.status(200).json({
             data: feeds,
         })
     }catch (e){
         res.status(500).json({
             error: "Internal Server Error",
             message: e.message || "Something went wrong while fetching feeds"
+        })
+    }
+}
+
+export const addNewFeed = async (req,res) => {
+    try{
+        const { content } = req.body;
+        const { userId } = req.user;
+
+        const newfeed = await feedsService.insertNewFeed(content, userId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Feed created successfully",
+            data: newfeed,
+        });
+    }catch (e){
+        res.status(500).json({
+            error: "Internal Server Error",
+            message: e.message || "Something went wrong while inserting feeds"
         })
     }
 }

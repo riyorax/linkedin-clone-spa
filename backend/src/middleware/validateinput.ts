@@ -25,7 +25,7 @@ export const isFilledEmail = (req, res) => {
 };
 
 export const isFilledFullname = (req, res) => {
-    if (!req.body.fullname) {
+    if (!req.body.name) {
         return res.status(200).json({
             success: false,
             message: "Missing required fields: fullname",
@@ -191,5 +191,20 @@ export const validateFeedParam = async (req, res, next) => {
         });
     }
 
+    next();
+};
+
+export const isFilledContent = (req, res, next) => {
+    const userId = req.user.userId;
+    const content = req.body.content;
+    if (!content) {
+        return res.status(200).json({
+            success: false,
+            message: "Missing required fields: content",
+            body: {
+                token: null,
+            },
+        });
+    }
     next();
 };

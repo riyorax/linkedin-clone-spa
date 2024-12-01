@@ -19,6 +19,39 @@ export const getAllUsers = async (req, res) => {
     }
 };
 
+export const getSelfProfile = async (req,res) => {
+    try {
+        const id = req.user.userId;
+        const user = await userService.getUserById(id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+                error: null,
+            });
+        }
+        const response = {
+            success: true,
+            message: "User data fetched successfully",
+        };
+        const responseBody = {
+            username: user.username,
+            name: user.full_name,
+            profile_photo: user.profile_photo_path,
+        };
+        return res.status(200).json({
+            ...response,
+            body: responseBody,
+        });
+    }catch (e) {
+        res.status(500).json({
+            success: false,
+            message: e.message || "Something went wrong while fetching users.",
+            error: e,
+        });
+    }
+}
+
 export const getUserById = async (req, res) => {
     try {
         const id = req.params.id;
