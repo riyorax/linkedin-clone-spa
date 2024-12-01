@@ -20,7 +20,7 @@ export const getConnRequest = async (fromId, toId) => {
 export const getConnRequestUser = async (userId) => {
     try {
         const connRequest = await prisma.$queryRaw`
-            SELECT u.full_name, u.profile_photo_path
+            SELECT u.id, u.username, u.full_name, u.profile_photo_path, res.created_at
              FROM users u
              JOIN (
                 SELECT r.from_id, r.created_at
@@ -28,7 +28,7 @@ export const getConnRequestUser = async (userId) => {
                 WHERE r.to_id = ${userId}
              ) res
              ON u.id = res.from_id
-             ORDER BY res.created_at;
+             ORDER BY res.created_at DESC;
             `
         
         return connRequest;

@@ -48,9 +48,9 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
   };
   
   const buttonStyles = {
-    default: "border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105",
-    pending: "text-white bg-bluelinkedin rounded-full cursor-not-allowed hover:bg-bluehover",
-    reject: "border-2 border-red-500 text-red-500 bg-white rounded-full hover:bg-red-500 hover:text-white hover:scale-105",
+    default: "w-full sm:w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105",
+    pending: "w-full sm:w-auto text-white bg-bluelinkedin rounded-full cursor-not-allowed hover:bg-bluehover",
+    reject: "w-full sm:w-auto border-2 border-red-500 text-red-500 bg-white rounded-full hover:bg-red-500 hover:text-white hover:scale-105",
   };
 
   const renderButton = () => {

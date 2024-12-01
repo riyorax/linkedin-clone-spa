@@ -55,7 +55,6 @@ const Feed: React.FC = () => {
             <aside>
                 <ProfileSidebar
                     full_name="asep"
-                    email="asep@gmail.com"
                     username="asepgemink"
                     profile_photo_path="p"
                 />
