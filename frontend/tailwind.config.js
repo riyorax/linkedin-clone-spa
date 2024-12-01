@@ -9,7 +9,7 @@ export default {
   	extend: {
   		colors: {
   			bglinkedin: '#f4f2ee',
-			bluelinkedin: '#0077B5',
+			bluelinkedin: '#0A66C2',
 			bluehover: '#005C8E',
   		},
   		borderRadius: {

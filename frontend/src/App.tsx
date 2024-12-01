@@ -1,7 +1,7 @@
 // import { ReactDOM } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header/Header";
-import Login from "./components/Login/Login";
+import Login from "./pages/Login";
 import Register from "./components/Register/Register";
 import Profile from "./pages/Profile";
 import ConnectionRequestPage from "./pages/ConnectionRequest";
