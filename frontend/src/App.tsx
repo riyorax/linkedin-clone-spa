@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header/Header";
 import Login from "./pages/Login";
-import Register from "./components/Register/Register";
+import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ConnectionRequestPage from "./pages/ConnectionRequest";
 import ConnectionPage from "./pages/Connection";
