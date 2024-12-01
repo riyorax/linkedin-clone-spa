@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
 import * as connectionService from '../services/connection.service';
 
-export const getMutualConnection = async (req: Request, res: Response) => {
+export const getMutualConnection = async (req, res) => {
     try {
         const listConnection = await connectionService.getMutualConnection(req.params.id);
         res.status(200).json({
             success: true,
             message: "List connection data fetched successfully",
             body: {
+                access: req.access,
                 listConnection: listConnection,
             },
         });

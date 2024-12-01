@@ -5,6 +5,7 @@ import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import Profile from "./pages/Profile";
 import ConnectionRequestPage from "./pages/ConnectionRequest";
+import ConnectionPage from "./pages/Connection";
 import Notfound from "./components/Error/Notfound";
 import Logout from "./components/Logout";
 import FeedContainer from "./components/Feed/Feed";
@@ -53,6 +54,7 @@ function App() {
             <Route path="/profile" />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/connection/request" element={<ConnectionRequestPage />} />
+            <Route path="/connection/list/:id" element={<ConnectionPage />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="*" element={<Notfound />} />
             <Route path="/feed" element={<FeedContainer feeds={feeds} />} />
