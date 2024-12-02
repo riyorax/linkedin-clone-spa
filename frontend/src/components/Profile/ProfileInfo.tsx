@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Edit, LogIn, UserMinus, UserPlus, Timer } from "lucide-react";
 import { EditProfileModal } from "./EditProfileModal";
+import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 
 interface ProfileProps {
@@ -23,6 +24,7 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
   const [loading, setLoading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleAction = async (
     endpoint: string,
@@ -37,6 +39,17 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
       if (response.status === 200) {
         setAcc(newAcc);
         setStatus(newStatus);
+        toast.toast({
+          title: `Success`,
+          description: `${endpoint} connection`,
+          duration: 2000,
+        })
+      } else {
+        toast.toast({
+          title: `Failed`,
+          description: `${endpoint} connection`,
+          duration: 2000,
+        })
       }
     } catch (error) {
       console.error(`Error during ${endpoint} action:`, error);
@@ -122,7 +135,7 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
         <div className="relative h-32 sm:h-48">
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none">
             <rect width="100%" height="100%" fill="#EAEAEA" rx="3" />

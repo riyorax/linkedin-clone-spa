@@ -3,6 +3,8 @@ import ProfileSidebar from "../components/Profile/ProfileSidebar";
 import { ConnectionRequest, ConnectionRequestCard } from '../components/RequestConnection/RequestCard'
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
+import { useProfile } from '@/context/ProfileContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface ApiResponse {
   id: string;
@@ -16,6 +18,8 @@ const ConnectionRequestPage: React.FC = () => {
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { profile, isLoading } = useProfile();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchConnectionRequest = async () => {
@@ -65,6 +69,17 @@ const ConnectionRequestPage: React.FC = () => {
       const response = method === "post" ? await axios.post(url, {}, { withCredentials: true }) : await axios.delete(url, { withCredentials: true });
       if (response.status === 200) {
         setRequests(requests.filter(request => request.id !== id));
+        toast.toast({
+          title: "Success",
+          description: `${endpoint} connection`,
+          duration: 2000,
+        })
+      } else {
+        toast.toast({
+          title: "Failed",
+          description: `${endpoint} connection`,
+          duration: 2000,
+        })
       }
     } catch (error) {
       console.error(`Error during ${endpoint} action:`, error);
@@ -78,9 +93,8 @@ const ConnectionRequestPage: React.FC = () => {
       <div className="flex justify-between">
         <aside className="hidden sm:block mr-2">
           <ProfileSidebar
-            full_name="asep"
-            username="asepgemink"
-            profile_photo_path="p"
+            profile={profile}
+            isLoading={isLoading}
           />
         </aside>
         <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">

@@ -61,8 +61,8 @@ export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileMo
     const newErrors: FormErrors = {}
     if (!formData.username.trim()) newErrors.username = 'Username is required'
     if (!formData.name.trim()) newErrors.name = 'Name is required'
-    if (profilePhoto && profilePhoto.size > 5 * 1024 * 1024) {
-      newErrors.profile_photo = 'Profile photo must be less than 5MB'
+    if (profilePhoto && profilePhoto.size > 10 * 1024 * 1024) {
+      newErrors.profile_photo = 'Profile photo must be less than 10MB'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -84,6 +84,10 @@ export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileMo
     }
     
     setIsLoading(false);
+    console.log("FormData entries:");
+    for (const [key, value] of submitData.entries()) {
+      console.log(key, value);
+    }
     onClose();
   }
 
@@ -156,7 +160,6 @@ export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileMo
                 onChange={handleFileChange}
                 accept="image/*"
                 className={`pt-2 sm:pt-1.5 text-[10px] sm:text-sm file:text-[10px] file:sm:text-sm cursor-pointer hover:bg-bglinkedin ${errors.profile_photo ? 'border-red-500' : ''}`}
-                            
               />
               {(profilePhoto || formData.profile_photo) && (
                 <Button

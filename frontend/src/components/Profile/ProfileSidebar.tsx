@@ -45,7 +45,7 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ profile, isLoading }) =
           <rect width="1200" height="1200" fill="#EAEAEA" rx="3" />
         </svg>
       </div>
-      <CardContent className="relative pt-10 pb-4" onClick={() => handleNavigate(profile?.id)}>
+      <CardContent className="cursor-pointer relative pt-10 pb-4" onClick={() => handleNavigate(profile?.id)}>
         <Avatar className="absolute -top-12 left-6 w-20 h-20 border-4 border-white shadow-md">
           <AvatarImage src={profile.profile_photo} alt={profile.name} />
           <AvatarFallback>{profile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
