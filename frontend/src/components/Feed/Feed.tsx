@@ -3,7 +3,8 @@ import FeedCard from "./FeedCard";
 import FeedInput from "./FeedInput";
 import ProfileSidebar from "../Profile/ProfileSidebar";
 import axios from "axios";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useProfile } from "@/context/ProfileContext";
 
 interface Users {
     full_name: string;
@@ -35,13 +36,6 @@ const fetchFeeds = async ({ pageParam = 0, limit = 10 }: FetchFeedsParams): Prom
     return data;
 };
 
-const fetchSelfProfile = async () => {
-    const response = await axios.get("http://localhost:3000/api/self/profile", {
-        withCredentials: true
-    });
-    return response.data.body;
-};
-
 const Feed: React.FC = () => {
     const {
         data,
@@ -58,26 +52,13 @@ const Feed: React.FC = () => {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
 
-    const { 
-        data: profile, 
-        isLoading: profileLoading, 
-        error: profileError 
-    } = useQuery({
-        queryKey: ['profile'],
-        queryFn: fetchSelfProfile
-    });
-
+    const { profile, isLoading } = useProfile();
+    // console.log(profile.)
     const feeds = data?.pages.flatMap((page) => page.data) || [];
-
     return (
-        <div className="flex flex-row justify-center min-w-max space-x-5">
+        <div className="container flex mx-auto px-8 lg:px-60 space-x-2">
             <aside className="w-64">
-                <ProfileSidebar
-                    full_name={profile?.name}
-                    username={profile?.username}
-                    profile_photo_path={profile?.profile_photo}
-                    isLoading={profileLoading}
-                />  
+                <ProfileSidebar profile={profile} isLoading={isLoading} />
             </aside>
             <div className="flex flex-col flex-grow max-w-xl w-full">
                 <FeedInput />
@@ -103,7 +84,6 @@ const Feed: React.FC = () => {
                     {!hasNextPage && <p>No more feeds to load.</p>}
                 </div>
             </div>
-            <div className="w-1/4 max-w-[300px] min-w-[200px]"></div>
         </div>
     );
 };

@@ -1,28 +1,51 @@
-import { useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useCallback } from "react";
+import axios from "axios";
+import { useProfile } from "@/context/ProfileContext";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Logout = () => {
-    // Function to retrieve all users
-    const logout = async () => {
-        try {
-            const res = await axios.get("http://localhost:3000/api/logout");
-            console.log(res.data); // Log the data to verify
-        } catch (err) {
-            console.error("Error fetching users:", err);
-        }
-    };
+  const navigate = useNavigate();
+  const toast = useToast();
+  const { refetchProfile } = useProfile();
 
-    // Use useEffect to call the function on component mount
-    useEffect(() => {
-        logout();
-    }, []); // Empty dependency array ensures this runs once on mount
+  // Function to handle logout
+  const logout = useCallback(async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/logout", {
+        withCredentials: true,
+      });
 
-    return (
-        <div>
-            <h1>Backdoor</h1>
-            <p>Check console for retrieved user data.</p>
-        </div>
-    );
+      if (res.data.success) {
+        toast.toast({
+          title: "Logout successful",
+          description: "Redirecting to the login page...",
+          duration: 2000,
+        });
+        refetchProfile(); 
+        navigate("/login");
+      } else {
+        toast.toast({
+          title: "Logout failed",
+          description: res.data.message || "An unknown error occurred.",
+          duration: 3000,
+        });
+      }
+    } catch (err) {
+      console.error("Error during logout:", err);
+      toast.toast({
+        title: "Logout error",
+        description: "An error occurred. Please try again.",
+        duration: 3000,
+      });
+    }
+  }, [navigate, refetchProfile, toast]);
+
+  useEffect(() => {
+    logout();
+  }, [logout]);
+
+  return null; 
 };
 
 export default Logout;

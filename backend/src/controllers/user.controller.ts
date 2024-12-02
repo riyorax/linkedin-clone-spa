@@ -42,6 +42,7 @@ export const getSelfProfile = async (req, res) => {
       message: "User data fetched successfully",
     };
     const responseBody = {
+      id: req.user.userId,
       username: user.username,
       name: user.full_name,
       profile_photo: user.profile_photo_path,
@@ -239,12 +240,14 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  res.clearCookie("token");
-  res.status(200).json({
-    success: true,
-    message: "Logged out successfully",
-  });
-};
+    res.clearCookie("token");
+    res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+        body: {
+        },
+    });
+}
 
 export const updateUser = async (req, res) => {
   try {
