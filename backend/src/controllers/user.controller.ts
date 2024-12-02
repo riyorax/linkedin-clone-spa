@@ -3,6 +3,7 @@ import * as userService from "../services/user.service";
 import * as authService from "../services/auth.service";
 import * as connectionService from "../services/connection.service";
 import * as connRequestService from "../services/connrequest.service";
+import * as feedService from "../services/feed.service";
 import "../utils/bigIntUtils";
 
 export const getAllUsers = async (req, res) => {
@@ -64,6 +65,7 @@ export const getUserById = async (req, res) => {
   try {
     const id = req.params.id;
     const user = await userService.getUserById(id);
+    const feed = await feedService.getFeedProfile(id);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -112,7 +114,7 @@ export const getUserById = async (req, res) => {
         ...response,
         body: {
           ...responseBody,
-          relevant_posts: null,
+          relevant_posts: feed,
           status_request: request,
         },
       });
@@ -121,7 +123,7 @@ export const getUserById = async (req, res) => {
         ...response,
         body: {
           ...responseBody,
-          relevant_posts: null,
+          relevant_posts: feed,
         },
       });
     }

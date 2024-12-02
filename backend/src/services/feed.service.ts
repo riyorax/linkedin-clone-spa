@@ -1,6 +1,24 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
-const feedClient = new PrismaClient().feed
+const feedClient = new PrismaClient().feed;
+
+export const getFeedProfile = async (id) => {
+  try {
+    const feeds = await feedClient.findMany({
+      where: {
+        user_id: id,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+      take: 10,
+    });
+
+    return feeds;
+  } catch (e) {
+    throw e;
+  }
+};
 
 export const getPaginatedFeeds = async ({cursor, limit = 10}) => {
     const feeds = await feedClient.findMany({
