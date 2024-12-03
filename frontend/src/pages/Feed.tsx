@@ -35,6 +35,7 @@ const fetchFeeds = async ({ pageParam = 0, limit = 10 }: FetchFeedsParams): Prom
             cursor: pageParam > 0 ? pageParam : undefined,
             limit,
         },
+        withCredentials: true
     });
     return data;
 };

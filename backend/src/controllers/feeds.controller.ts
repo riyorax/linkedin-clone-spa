@@ -7,8 +7,9 @@ export const getFeedsPaginated = async (req, res) => {
     try{
         const limit = parseInt(req.query.limit) || 10;
         const cursor = req.query.cursor ? parseInt(req.query.cursor) : undefined;
+        const userId = req.user.userId;
 
-        const feeds = await feedsService.getPaginatedFeeds({limit, cursor});
+        const feeds = await feedsService.getPaginatedFeeds({limit, cursor, userId});
 
         return res.status(200).json({
             data: feeds,

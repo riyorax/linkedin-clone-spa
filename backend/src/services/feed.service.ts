@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 const feedClient = new PrismaClient().feed;
+const connectionClient = new PrismaClient().connection;
 
 export const getFeedProfile = async (id) => {
   try {
@@ -20,22 +21,44 @@ export const getFeedProfile = async (id) => {
   }
 };
 
-export const getPaginatedFeeds = async ({cursor, limit = 10}) => {
+export const getPaginatedFeeds = async ({cursor, limit = 10, userId}) => {
+    const connectedUserIds = await connectionClient.findMany({
+        where: {
+            OR: [
+                { from_id: userId },
+                { to_id: userId }
+            ]
+        },
+        select: {
+            from_id: true,
+            to_id: true
+        }
+    }).then(connections => 
+        connections.map(c => c.from_id === userId ? c.to_id : c.from_id)
+    );
+
     const feeds = await feedClient.findMany({
+        where: {
+            OR: [
+                { user_id: { in: connectedUserIds } },
+                { user_id: userId }
+            ]
+        },
         skip: cursor ? 1 : 0,
-        cursor: cursor ? { id: cursor} : undefined,
+        cursor: cursor ? { id: cursor } : undefined,
         take: limit,
-        orderBy: { created_at: 'desc'},
+        orderBy: { created_at: 'desc' },
         include: {
             users: {
                 select: {
                     full_name: true,
                     profile_photo_path: true,
-                    id: true,
-                },
-            },
-        },
+                    id: true
+                }
+            }
+        }
     });
+
     return feeds;
 }
 
