@@ -1,7 +1,7 @@
 import React from "react";
-import FeedCard from "./FeedCard";
-import FeedInput from "./FeedInput";
-import ProfileSidebar from "../Profile/ProfileSidebar";
+import FeedCard from "../components/Feed/FeedCard";
+import FeedInput from "../components/Feed/FeedInput";
+import ProfileSidebar from "../components/Profile/ProfileSidebar";
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useProfile } from "@/context/ProfileContext";
@@ -19,6 +19,8 @@ interface Feed {
     id: number;
     users: Users;
     content: string;
+    updated_at: string;
+    user_id: number;
 }
 
 interface FeedResponse {
@@ -53,8 +55,8 @@ const Feed: React.FC = () => {
     });
 
     const { profile, isLoading } = useProfile();
-    // console.log(profile.)
     const feeds = data?.pages.flatMap((page) => page.data) || [];
+
     return (
         <div className="container flex mx-auto px-8 lg:px-60 space-x-2">
             <aside className="w-64">
@@ -69,6 +71,9 @@ const Feed: React.FC = () => {
                         user_name={feed.users.full_name}
                         user_profile={feed.users.profile_photo_path}
                         content={feed.content}
+                        updated_at={feed.updated_at}
+                        user_id ={feed.user_id}
+                        viewer_id={profile.id}
                     />
                 ))}
                 <div className="mt-4">

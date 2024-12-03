@@ -11,6 +11,9 @@ import { PenBox } from "lucide-react";
 interface Feed {
   id: number;
   content: string;
+  updated_at: string;
+  user_id: number;
+  viewer_id: number;
 }
 
 interface ProfileData {
@@ -114,6 +117,9 @@ const ProfilePage: React.FC = () => {
                       user_name={profileData.name}
                       user_profile={profileData.profile_photo}
                       content={feed.content}
+                      updated_at={feed.updated_at}
+                      user_id={feed.user_id}
+                      viewer_id={id}
                     />
                   ))
                 ) : (

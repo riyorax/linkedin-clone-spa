@@ -52,3 +52,45 @@ export const insertNewFeed = async (content, userId) =>{
         throw e;
     }
 }
+
+
+export const editFeed = async (content, feedId) => {
+    try{
+        return await feedClient.update({
+            where:{
+                id: feedId,
+            },
+            data: {
+                content: content,
+            }
+        });
+    }catch (e) {
+        throw e;
+    }
+}
+
+export const deleteFeed = async (feedId) => {
+    try{
+        return await feedClient.delete({
+            where:{
+                id: feedId,
+            }
+        });
+    }catch (e) {
+        throw e;
+    }
+}
+
+export const isOwnerFeed = async (feedId, userId) => {
+    try{
+        const feed = await feedClient.findFirst({
+            where: {
+                id: feedId,
+                user_id: userId,
+            },
+        })
+        return feed !== null
+    }catch (e) {
+        throw e;
+    }
+}
