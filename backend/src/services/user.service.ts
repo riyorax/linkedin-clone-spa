@@ -61,10 +61,12 @@ export const createUser = async (username: string, email: string, fullname: stri
 
 export const updateUserData = async (id: number, updatedData: any) => {
     try {
-        return await userClient.update({
+        const updatedUser = await userClient.update({
             where: { id },
             data: updatedData,
         });
+
+        return updatedUser;
     } catch (e) {
         throw e;
     }

@@ -242,28 +242,34 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    res.clearCookie("token");
-    res.status(200).json({
-        success: true,
-        message: "Logged out successfully",
-        body: {
-        },
-    });
+  res.clearCookie("token");
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+    body: {
+    },
+  });
 }
 
 export const updateUser = async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
-    const { username, email, password } = req.body;
+    const { username, name, workHistory, skills, profilePhoto } = req.body;
 
     if (!userId || isNaN(userId)) {
-      return res.status(400).json({ error: "Invalid user ID" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+        error: null,
+      });
     }
 
     const currentUser = await userService.getUserById(userId);
     if (!currentUser) {
       return res.status(404).json({
-        error: "User not found",
+        success: false,
+        message: "User not found",
+        error: null,
       });
     }
 
@@ -271,38 +277,43 @@ export const updateUser = async (req, res) => {
       const existingUser = await userService.getUserByUsername(username);
       if (existingUser) {
         return res.status(409).json({
-          error: "Username already exists",
+          success: false,
+          message: "Username already exists",
+          error: null,
         });
       }
     }
 
-    if (email && email !== currentUser.email) {
-      const existingUser = await userService.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(409).json({
-          error: "Email already exists",
-        });
-      }
+    if (!profilePhoto) {
+      // hapus dari storage
     }
 
-    // Prepare updated data
-    // Belum handle udpate password
-    const userData = {
+    const updatedData = {
       username: username || currentUser.username,
-      email: email || currentUser.email,
-      password_hash: currentUser.password_hash,
+      full_name: name || currentUser.full_name,
+      work_history: workHistory || currentUser.work_history,
+      skills: skills || currentUser.skills,
+      profile_photo_path: profilePhoto || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png",
     };
 
-    const updatedUser = await userService.updateUserData(userId, {
-      username,
-      email,
-    });
+    const updatedUser = await userService.updateUserData(userId, updatedData);
 
-    res.status(200).json({ data: updatedUser });
+    res.status(200).json({
+      success: true,
+      message: "User data updated successfully",
+      body: {
+        username: updatedUser.username,
+        name: updatedUser.full_name,
+        work_history: updatedUser.work_history,
+        skills: updatedUser.skills,
+        profile_photo: updatedUser.profile_photo_path,
+      },
+    });
   } catch (e) {
     res.status(500).json({
-      error: "Internal Server Error",
+      success: false,
       message: e.message || "An error occurred while updating the user.",
+      error: e,
     });
   }
 };

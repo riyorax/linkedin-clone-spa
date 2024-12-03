@@ -7,6 +7,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import feedRouter from "./routes/feed.router";
+import path from "path";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api", profileRouter);
 app.use("/api", connectionRouter);
 app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
+app.use("/image", express.static(path.resolve(__dirname, "../../uploads/images")));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
