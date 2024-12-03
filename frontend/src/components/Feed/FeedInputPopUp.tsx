@@ -17,13 +17,13 @@ const addFeeds  = async ({ content }: {content: string}) => {
     return response.data;
 };
 
+
 const FeedInputPopUp: React.FC = ({})=>{
     const [isOpen, setIsOpen] = useState(false);
     const [content, setContent] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null); 
     const queryClient = useQueryClient();
     const toast = useToast()
-
 
     useEffect(() => {
         if (isOpen && textareaRef.current) {

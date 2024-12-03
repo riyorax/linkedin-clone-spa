@@ -10,6 +10,7 @@ interface Users {
     full_name: string;
     profile_photo_path: string;
 }
+
 interface FetchFeedsParams {
     pageParam: number;
     limit: number;
@@ -56,42 +57,44 @@ const Feed: React.FC = () => {
 
     const { profile, isLoading } = useProfile();
     const feeds = data?.pages.flatMap((page) => page.data) || [];
-
-    return (
-        <div className="container flex mx-auto px-8 lg:px-60 space-x-2 ">
-            <aside>
-                <ProfileSidebar profile={profile} isLoading={isLoading} />
-            </aside>
-            <div className="flex flex-col flex-grow max-w-xl w-full">
-                <FeedInput />
-                <hr className="my-4 border border-gray-300" />
-                {feeds.map((feed) => (
-                    <FeedCard
-                        key={feed.id}
-                        feed_id = {feed.id}
-                        user_name={feed.users.full_name}
-                        user_profile={feed.users.profile_photo_path}
-                        content={feed.content}
-                        updated_at={feed.updated_at}
-                        user_id ={feed.user_id}
-                        viewer_id={profile.id}
-                    />
-                ))}
-                <div className="mt-4">
-                    {hasNextPage && (
-                        <button
-                            className="p-2 bg-blue-500 text-white rounded"
-                            onClick={() => fetchNextPage()}
-                            disabled={isFetchingNextPage}
-                        >
-                            {isFetchingNextPage ? "Loading more..." : "Load More"}
-                        </button>
-                    )}
-                    {!hasNextPage && <p>No more feeds to load.</p>}
+    if(!isLoading){
+        return (
+            <div className="container flex mx-auto px-8 lg:px-60 space-x-2 ">
+                <aside>
+                    <ProfileSidebar profile={profile} isLoading={isLoading} />
+                </aside>
+                <div className="flex flex-col flex-grow max-w-xl w-full">
+                    <FeedInput/>
+                    <hr className="my-4 border border-gray-300" />
+                    {feeds.map((feed) => (
+                        <FeedCard
+                            key={feed.id}
+                            feed_id = {feed.id}
+                            user_name={feed.users.full_name}
+                            user_profile={feed.users.profile_photo_path}
+                            content={feed.content}
+                            updated_at={feed.updated_at}
+                            user_id ={feed.user_id}
+                            viewer_id={profile?.id}
+                        />
+                    ))}
+                    <div className="mt-4">
+                        {hasNextPage && (
+                            <button
+                                className="p-2 bg-blue-500 text-white rounded"
+                                onClick={() => fetchNextPage()}
+                                disabled={isFetchingNextPage}
+                            >
+                                {isFetchingNextPage ? "Loading more..." : "Load More"}
+                            </button>
+                        )}
+                        {!hasNextPage && <p>No more feeds to load.</p>}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
+   
 };
 
 export default Feed;

@@ -8,7 +8,7 @@ interface Props {
     content: string;
     updated_at: string;
     user_id: number;
-    viewer_id: number;
+    viewer_id: number | undefined;
 }
 
 const FeedCard: React.FC<Props> = ({ feed_id, user_name, user_profile, content, updated_at, user_id, viewer_id})=>{

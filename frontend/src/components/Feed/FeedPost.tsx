@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
+import { useProfile } from "@/context/ProfileContext";
 
 interface FeedPostProps {
     initialContent?: string;
@@ -10,12 +11,12 @@ interface FeedPostProps {
     isPending?: boolean;
 }
 
-const FeedPost: React.FC<FeedPostProps> = ({ initialContent = "", onSubmit, onCancel, isOpen, submitLabel = "Post", isPending = false,}) => {
+const FeedPost: React.FC<FeedPostProps> = ({ initialContent = "", onSubmit, onCancel, isOpen, submitLabel = "Post", isPending = false}) => {
     const [content, setContent] = useState(initialContent);
     const [showConfirm, setShowConfirm] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const characterCount = content.length;
-
+    const { profile, isLoading } = useProfile();
     useEffect(() => {
         if (isOpen && textareaRef.current) {
           textareaRef.current.focus();
@@ -50,9 +51,9 @@ const FeedPost: React.FC<FeedPostProps> = ({ initialContent = "", onSubmit, onCa
                 <>
                     <div className="flex items-center justify-between">
                         <div className="flex flex-row items-center">
-                            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Profile" className="w-12 h-12 rounded-full object-cover"/>
+                            <img src={profile?.profile_photo} alt="Profile" className="w-12 h-12 rounded-full object-cover"/>
                             <div className="ml-3">
-                                <h3 className="font-semibold">Maximilian Sulistiyo</h3>
+                                <h3 className="font-semibold">{profile?.name}</h3>
                             </div>
                         </div>
                         <button className="text-gray-500 hover:text-gray-700 text-right" onClick={handleClose}>
