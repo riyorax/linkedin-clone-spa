@@ -2,6 +2,7 @@ import React from "react";
 import FeedCardPopUp from "./FeedCardPopUp";
 
 interface Props {
+    feed_id: number;
     user_name: string;
     user_profile: string;
     content: string;
@@ -10,7 +11,7 @@ interface Props {
     viewer_id: number;
 }
 
-const FeedCard: React.FC<Props> = ({user_name, user_profile, content, updated_at, user_id, viewer_id})=>{
+const FeedCard: React.FC<Props> = ({ feed_id, user_name, user_profile, content, updated_at, user_id, viewer_id})=>{
     function postedTime(updated_at: string): string {
         const now = new Date();
         const updated_at_time = new Date(updated_at);
@@ -45,7 +46,7 @@ const FeedCard: React.FC<Props> = ({user_name, user_profile, content, updated_at
                         <p className="text-sm text-gray-500">{postedTime(updated_at)}</p>
                     </div>
                 </div>
-                {user_id === viewer_id && <FeedCardPopUp />}
+                {user_id === viewer_id && <FeedCardPopUp feed_id = {feed_id} currentContent={content}/>}
             </div>
             <div className="mb-3 mx-3">
                 <p>{content}</p>

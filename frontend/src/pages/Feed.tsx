@@ -58,8 +58,8 @@ const Feed: React.FC = () => {
     const feeds = data?.pages.flatMap((page) => page.data) || [];
 
     return (
-        <div className="container flex mx-auto px-8 lg:px-60 space-x-2">
-            <aside className="w-64">
+        <div className="container flex mx-auto px-8 lg:px-60 space-x-2 ">
+            <aside>
                 <ProfileSidebar profile={profile} isLoading={isLoading} />
             </aside>
             <div className="flex flex-col flex-grow max-w-xl w-full">
@@ -68,6 +68,7 @@ const Feed: React.FC = () => {
                 {feeds.map((feed) => (
                     <FeedCard
                         key={feed.id}
+                        feed_id = {feed.id}
                         user_name={feed.users.full_name}
                         user_profile={feed.users.profile_photo_path}
                         content={feed.content}

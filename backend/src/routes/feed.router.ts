@@ -8,6 +8,6 @@ const feedRouter = Router();
 feedRouter.get('/feed', verifyToken, validateFeedParam, getFeedsPaginated);
 feedRouter.post('/feed', verifyToken, isFilledContent, addNewFeed);
 feedRouter.put('/feed/:id', verifyToken, validateParamId, isFilledContent, editFeedContent);
-feedRouter.put('/feed/:id', verifyToken, validateParamId, deleteFeedById);
+feedRouter.delete('/feed/:id', verifyToken, validateParamId, deleteFeedById);
 
 export default feedRouter;
