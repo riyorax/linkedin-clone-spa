@@ -8,6 +8,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertTriangle, X } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
+import { ProfileData } from "@/type/Profile";
+import axios from 'axios'
 
 interface EditProfileModalProps {
   isOpen: boolean
@@ -16,26 +19,28 @@ interface EditProfileModalProps {
   initialData: {
     username: string
     name: string
-    work_history: string
+    workHistory: string
     skills: string
     profile_photo?: string
   }
+  onProfileUpdate: (updatedData: Partial<ProfileData>) => void;
 }
 
 interface FormErrors {
   username?: string
   name?: string
-  work_history?: string
+  workHistory?: string
   skills?: string
   profile_photo?: string
   general?: string
 }
 
-export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileModalProps) {
+export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfileUpdate }: EditProfileModalProps) {
   const [formData, setFormData] = useState(initialData)
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
+  const toast = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -59,10 +64,12 @@ export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileMo
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
-    if (!formData.username.trim()) newErrors.username = 'Username is required'
-    if (!formData.name.trim()) newErrors.name = 'Name is required'
+    if (!formData.username.trim()) newErrors.username = "Username is required"
+    if (formData.username.trim().length < 4) newErrors.username = "Username must be at least 4 characters."
+    if (!formData.name.trim()) newErrors.name = "Name is required"
+    if (formData.name.trim().length < 4) newErrors.name = "Full name must be at least 4 characters."
     if (profilePhoto && profilePhoto.size > 10 * 1024 * 1024) {
-      newErrors.profile_photo = 'Profile photo must be less than 10MB'
+      newErrors.profile_photo = "Profile photo must be less than 10MB"
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -82,13 +89,41 @@ export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileMo
     if (profilePhoto) {
         submitData.append('profile_photo', profilePhoto)
     }
-    
-    setIsLoading(false);
-    console.log("FormData entries:");
-    for (const [key, value] of submitData.entries()) {
-      console.log(key, value);
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/api/profile/${userId}`,
+        submitData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response.status === 200 && response.data.success) {
+        toast.toast({
+          title: "Edit Successful",
+          description: "User data updated successfully.",
+          duration: 2000,
+        })
+        console.log(response.data.body);
+        onProfileUpdate(response.data.body);
+        onClose()
+      } else {
+        toast.toast({
+          title: "Edit Failed",
+          description: response.data.message || "Failed to update user data.",
+          duration: 2000,
+        })
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred."
+      setErrors({ general: errorMessage })
+    } finally {
+      setIsLoading(false);
+      onClose();
     }
-    onClose();
   }
 
   return (
@@ -127,16 +162,16 @@ export function EditProfileModal({ isOpen, onClose, initialData }: EditProfileMo
             {errors.name && <p className="text-red-500 text-[8px] sm:text-xs">{errors.name}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="work_history" className="text-[10px] sm:text-sm">Work History</Label>
+            <Label htmlFor="workHistory" className="text-[10px] sm:text-sm">Work History</Label>
             <Textarea
-              id="work_history"
-              name="work_history"
-              value={formData.work_history}
+              id="workHistory"
+              name="workHistory"
+              value={formData.workHistory}
               onChange={handleInputChange}
               rows={3}
-              className={`text-[10px] sm:text-sm ${errors.work_history ? 'border-red-500' : ''}`}
+              className={`text-[10px] sm:text-sm ${errors.workHistory ? 'border-red-500' : ''}`}
             />
-            {errors.work_history && <p className="text-red-500 text-[8px] sm:text-xs">{errors.work_history}</p>}
+            {errors.workHistory && <p className="text-red-500 text-[8px] sm:text-xs">{errors.workHistory}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="skills" className="text-[10px] sm:text-sm">Skills</Label>

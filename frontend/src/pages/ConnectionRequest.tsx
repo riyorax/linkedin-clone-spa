@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'react';
 import ProfileSidebar from "../components/Profile/ProfileSidebar";
-import { ConnectionRequest, ConnectionRequestCard } from '../components/RequestConnection/RequestCard'
+import { ConnectionRequestCard } from '../components/RequestConnection/RequestCard'
+import { ConnectionRequest } from '@/type/ConnectionRequest'
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
 import { useProfile } from '@/context/ProfileContext';
 import { useToast } from '@/hooks/use-toast';
-
-interface ApiResponse {
-  id: string;
-  username: string;
-  full_name: string;
-  profile_photo_path: string;
-  created_at: string;
-}
 
 const ConnectionRequestPage: React.FC = () => {
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
@@ -27,7 +20,7 @@ const ConnectionRequestPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get<{ success: boolean; message: string; body: { listConnRequest: ApiResponse[] } }>(
+        const response = await axios.get<{ success: boolean; message: string; body: { listConnRequest: ConnectionRequest[] } }>(
           `http://localhost:3000/api/connection/request`,
           { withCredentials: true }
         );
@@ -36,10 +29,10 @@ const ConnectionRequestPage: React.FC = () => {
           const apiData = response.data.body.listConnRequest;
           const mappedData = apiData.map((item) => ({
             id: item.id,
-            name: item.full_name || "Unknown",
+            name: item.name || "Unknown",
             username: item.username,
-            profile_photo: item.profile_photo_path,
-            createdAt: item.created_at,
+            profile_photo: item.profile_photo,
+            createdAt: item.createdAt,
           }));
 
           setRequests(mappedData);

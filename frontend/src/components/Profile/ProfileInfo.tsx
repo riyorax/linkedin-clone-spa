@@ -7,6 +7,7 @@ import { Edit, LogIn, UserMinus, UserPlus, Timer } from "lucide-react";
 import { EditProfileModal } from "./EditProfileModal";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { ProfileData } from "@/type/Profile";
 
 interface ProfileProps {
   id: string;
@@ -16,9 +17,10 @@ interface ProfileProps {
   username: string;
   profile_photo: string;
   connection_count: number;
+  onProfileUpdate: (updatedData: Partial<ProfileData>) => void;
 }
 
-const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, connection_count }) => {
+const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, connection_count, onProfileUpdate }) => {
   const [acc, setAcc] = useState(access);
   const [status, setStatus] = useState(status_request);
   const [loading, setLoading] = useState(false);
@@ -169,9 +171,10 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
         initialData={{
           username,
           name,
-          work_history: "",
+          workHistory: "",
           skills: "",
         }}
+        onProfileUpdate={onProfileUpdate}
       />
     </>
   );

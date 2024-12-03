@@ -1,13 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
-
-interface Profile {
-  id: number;
-  name: string;
-  username: string;
-  profile_photo: string;
-}
+import { Profile } from "@/type/Profile";
 
 interface ProfileSidebarProps {
   profile: Profile | null;

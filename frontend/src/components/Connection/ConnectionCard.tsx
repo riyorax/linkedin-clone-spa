@@ -1,16 +1,10 @@
+import { Connection } from "@/type/Connection"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { Mail, UserMinus } from "lucide-react";
 import { useState } from "react";
-
-export interface Connection {
-    id: string;
-    full_name: string;
-    username: string;
-    profile_photo: string;
-}
 
 interface ConnectionCardProps {
     access: string;

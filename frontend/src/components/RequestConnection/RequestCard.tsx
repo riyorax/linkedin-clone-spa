@@ -1,16 +1,9 @@
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { ConnectionRequest } from "@/type/ConnectionRequest"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-
-export interface ConnectionRequest {
-    id: string;
-    name: string;
-    username: string;
-    profile_photo: string;
-    createdAt: string;
-}
 
 interface ConnectionRequestCardProps {
     request: ConnectionRequest;

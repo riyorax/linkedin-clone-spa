@@ -6,27 +6,8 @@ import Skills from "@/components/Profile/Skills";
 import Experience from "@/components/Profile/Experience";
 import FeedCard from "@/components/Feed/FeedCard"
 import { Card, CardContent } from "@/components/ui/card";
+import { ProfileData } from "@/type/Profile";
 import { PenBox } from "lucide-react";
-
-interface Feed {
-  id: number;
-  content: string;
-  updated_at: string;
-  user_id: number;
-  viewer_id: number;
-}
-
-interface ProfileData {
-  access: string;
-  status_request: string;
-  username: string;
-  name: string;
-  work_history: string;
-  skills: string;
-  connection_count: number;
-  profile_photo: string;
-  relevant_posts: Feed[];
-}
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +61,12 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchProfileData();
-  }, [id, profileData?.connection_count]);
+  }, [id]);
+
+  const handleUpdateProfile = (updatedData: Partial<ProfileData>) => {
+    setProfileData((prev) => prev ? { ...prev, ...updatedData } : null);
+    console.log("update:", updatedData);
+  };  
 
   const renderPage = () => {
     if (loading) {
@@ -100,6 +86,7 @@ const ProfilePage: React.FC = () => {
             username={profileData.username}
             profile_photo={profileData.profile_photo}
             connection_count={profileData.connection_count}
+            onProfileUpdate={handleUpdateProfile}
           />
           <Experience experience={profileData.work_history} />
           <Skills skills={profileData.skills} />
@@ -119,7 +106,7 @@ const ProfilePage: React.FC = () => {
                       content={feed.content}
                       updated_at={feed.updated_at}
                       user_id={feed.user_id}
-                      viewer_id={id}
+                      viewer_id={Number(id)}
                     />
                   ))
                 ) : (

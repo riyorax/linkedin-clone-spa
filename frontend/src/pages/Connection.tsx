@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react';
 import ProfileSidebar from "../components/Profile/ProfileSidebar";
-import { Connection, ConnectionCard } from '../components/Connection/ConnectionCard'
+import { ConnectionCard } from '../components/Connection/ConnectionCard'
+import { Connection } from '@/type/Connection'
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useProfile } from '@/context/ProfileContext';
 import { useToast } from '@/hooks/use-toast';
-
-interface ApiResponse {
-    id: string;
-    full_name: string;
-    username: string;
-    profile_photo_path: string;
-}
 
 const ConnectionPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -43,12 +37,12 @@ const ConnectionPage: React.FC = () => {
                 if (response.status === 200 && response.data.success) {
                     const access = response.data.body.access;
                     setAccess(access);
-                    const apiData: ApiResponse[] = response.data.body.listConnection;
+                    const apiData: Connection[] = response.data.body.listConnection;
                     const mappedData = apiData.map((item) => ({
                         id: item.id,
                         full_name: item.full_name || "Unknown",
                         username: item.username,
-                        profile_photo: item.profile_photo_path,
+                        profile_photo: item.profile_photo,
                     }));
 
                     setConnections(mappedData);
