@@ -79,7 +79,7 @@ const Register = () => {
           duration: 3000,
         })
 
-        navigate("/profile")
+        navigate("/feed")
       }
       else {
         toast.toast({

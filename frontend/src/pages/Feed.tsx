@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect, useRef } from "react";
 import FeedCard from "../components/Feed/FeedCard";
 import FeedInput from "../components/Feed/FeedInput";
 import ProfileSidebar from "../components/Profile/ProfileSidebar";
@@ -58,6 +59,32 @@ const Feed: React.FC = () => {
 
     const { profile, isLoading } = useProfile();
     const feeds = data?.pages.flatMap((page) => page.data) || [];
+
+    const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (!hasNextPage || isFetchingNextPage) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (loadMoreRef.current) {
+            observer.observe(loadMoreRef.current);
+        }
+
+        return () => {
+            if (loadMoreRef.current) {
+                observer.unobserve(loadMoreRef.current);
+            }
+        };
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
     if(!isLoading){
         return (
             <div className="container flex mx-auto px-8 lg:px-60 space-x-2 ">
@@ -79,18 +106,10 @@ const Feed: React.FC = () => {
                             viewer_id={profile?.id}
                         />
                     ))}
-                    <div className="mt-4">
-                        {hasNextPage && (
-                            <button
-                                className="p-2 bg-blue-500 text-white rounded"
-                                onClick={() => fetchNextPage()}
-                                disabled={isFetchingNextPage}
-                            >
-                                {isFetchingNextPage ? "Loading more..." : "Load More"}
-                            </button>
-                        )}
-                        {!hasNextPage && <p>No more feeds to load.</p>}
+                     <div ref={loadMoreRef} className="h-10 flex justify-center items-center">
+                        {isFetchingNextPage && <p>Loading...</p>}
                     </div>
+                    {!hasNextPage && <p>No more feeds to load.</p>}
                 </div>
             </div>
         );

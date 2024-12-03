@@ -59,7 +59,12 @@ export const getPaginatedFeeds = async ({cursor, limit = 10, userId}) => {
         }
     });
 
-    return feeds;
+    const nextCursor = feeds.length === limit ? feeds[feeds.length - 1].id : null;
+
+    return {
+        feeds,
+        nextCursor,
+    };
 }
 
 export const insertNewFeed = async (content, userId) =>{
@@ -85,6 +90,7 @@ export const editFeed = async (content, feedId) => {
             },
             data: {
                 content: content,
+                updated_at: new Date()
             }
         });
     }catch (e) {

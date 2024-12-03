@@ -225,12 +225,12 @@ export function Header() {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <Link to="/profile" className="flex-shrink-0 text-[10px] sm:text-sm">Profile
+                            <DropdownMenuItem asChild>
+                                <Link to={`/profile/${profile.id}`} className="flex-shrink-0 text-[10px] sm:text-sm w-full">Profile
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Link to="/logout" className="flex-shrink-0 text-[10px] sm:text-sm">Sign Out
+                            <DropdownMenuItem asChild>
+                                <Link to="/logout" className="flex-shrink-0 text-[10px] sm:text-sm w-full">Sign Out
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
