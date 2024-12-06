@@ -1,21 +1,18 @@
 import { useEffect, useState } from 'react';
 import ProfileSidebar from "../components/Profile/ProfileSidebar";
-import { ConnectionRequest, ConnectionRequestCard } from '../components/RequestConnection/RequestCard'
+import { ConnectionRequestCard } from '../components/RequestConnection/RequestCard'
+import { ConnectionRequest } from '@/type/ConnectionRequest'
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
-
-interface ApiResponse {
-  id: string;
-  username: string;
-  full_name: string;
-  profile_photo_path: string;
-  created_at: string;
-}
+import { useProfile } from '@/context/ProfileContext';
+import { useToast } from '@/hooks/use-toast';
 
 const ConnectionRequestPage: React.FC = () => {
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { profile, isLoading } = useProfile();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchConnectionRequest = async () => {
@@ -23,7 +20,7 @@ const ConnectionRequestPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get<{ success: boolean; message: string; body: { listConnRequest: ApiResponse[] } }>(
+        const response = await axios.get<{ success: boolean; message: string; body: { listConnRequest: ConnectionRequest[] } }>(
           `http://localhost:3000/api/connection/request`,
           { withCredentials: true }
         );
@@ -32,10 +29,10 @@ const ConnectionRequestPage: React.FC = () => {
           const apiData = response.data.body.listConnRequest;
           const mappedData = apiData.map((item) => ({
             id: item.id,
-            name: item.full_name || "Unknown",
+            name: item.name || "Unknown",
             username: item.username,
-            profile_photo: item.profile_photo_path,
-            createdAt: item.created_at,
+            profile_photo: item.profile_photo,
+            createdAt: item.createdAt,
           }));
 
           setRequests(mappedData);
@@ -65,6 +62,17 @@ const ConnectionRequestPage: React.FC = () => {
       const response = method === "post" ? await axios.post(url, {}, { withCredentials: true }) : await axios.delete(url, { withCredentials: true });
       if (response.status === 200) {
         setRequests(requests.filter(request => request.id !== id));
+        toast.toast({
+          title: "Success",
+          description: `${endpoint} connection`,
+          duration: 2000,
+        })
+      } else {
+        toast.toast({
+          title: "Failed",
+          description: `${endpoint} connection`,
+          duration: 2000,
+        })
       }
     } catch (error) {
       console.error(`Error during ${endpoint} action:`, error);
@@ -78,9 +86,8 @@ const ConnectionRequestPage: React.FC = () => {
       <div className="flex justify-between">
         <aside className="hidden sm:block mr-2">
           <ProfileSidebar
-            full_name="asep"
-            username="asepgemink"
-            profile_photo_path="p"
+            profile={profile}
+            isLoading={isLoading}
           />
         </aside>
         <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">

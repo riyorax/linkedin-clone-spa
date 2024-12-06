@@ -8,7 +8,7 @@ interface SkillsProps {
 
 const Skills: React.FC<SkillsProps> = ({ skills }) => {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
       <CardContent className="p-4 sm:p-6">
         <h3 className="text-sm sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center">
           <Settings size={20} className="mr-2" />

@@ -4,18 +4,10 @@ import { useParams } from "react-router-dom";
 import ProfileInfo from "@/components/Profile/ProfileInfo";
 import Skills from "@/components/Profile/Skills";
 import Experience from "@/components/Profile/Experience";
-
-interface ProfileData {
-  access: string;
-  status_request: string;
-  username: string;
-  name: string;
-  work_history: string;
-  skills: string;
-  connection_count: number;
-  profile_photo: string;
-  relevant_posts: string[] | null;
-}
+import FeedCard from "@/components/Feed/FeedCard"
+import { Card, CardContent } from "@/components/ui/card";
+import { ProfileData } from "@/type/Profile";
+import { PenBox } from "lucide-react";
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -71,6 +63,11 @@ const ProfilePage: React.FC = () => {
     fetchProfileData();
   }, [id]);
 
+  const handleUpdateProfile = (updatedData: Partial<ProfileData>) => {
+    setProfileData((prev) => prev ? { ...prev, ...updatedData } : null);
+    console.log("update:", updatedData);
+  };  
+
   const renderPage = () => {
     if (loading) {
       return <p>Loading profile...</p>;
@@ -89,9 +86,35 @@ const ProfilePage: React.FC = () => {
             username={profileData.username}
             profile_photo={profileData.profile_photo}
             connection_count={profileData.connection_count}
+            onProfileUpdate={handleUpdateProfile}
           />
           <Experience experience={profileData.work_history} />
           <Skills skills={profileData.skills} />
+          {profileData.access !== "public" &&
+            <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
+              <CardContent className="p-4 sm:p-6 space-y-5">
+                <h3 className="text-sm sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center">
+                  <PenBox size={20} className="mr-2" />
+                  <span>10 Latest Feeds</span>
+                </h3>
+                {profileData.relevant_posts && profileData.relevant_posts.length > 0 ? (
+                  profileData.relevant_posts.map((feed) => (
+                    <FeedCard
+                      key={feed.id}
+                      user_name={profileData.name}
+                      user_profile={profileData.profile_photo}
+                      content={feed.content}
+                      updated_at={feed.updated_at}
+                      user_id={feed.user_id}
+                      viewer_id={Number(id)}
+                    />
+                  ))
+                ) : (
+                  <p className="text-[12px] sm:text-sm">No feeds listed yet.</p>
+                )}
+              </CardContent>
+            </Card>
+          }
         </>
       );
     }

@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
 import ProfileSidebar from "../components/Profile/ProfileSidebar";
-import { Connection, ConnectionCard } from '../components/Connection/ConnectionCard'
+import { ConnectionCard } from '../components/Connection/ConnectionCard'
+import { Connection } from '@/type/Connection'
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
-interface ApiResponse {
-    id: string;
-    full_name: string;
-    username: string;
-    profile_photo_path: string;
-}
+import { useProfile } from '@/context/ProfileContext';
+import { useToast } from '@/hooks/use-toast';
 
 const ConnectionPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -18,6 +14,8 @@ const ConnectionPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [access, setAccess] = useState<string>('');
+    const { profile, isLoading } = useProfile();
+    const toast = useToast();
 
     useEffect(() => {
         const fetchConnectionRequest = async () => {
@@ -39,12 +37,12 @@ const ConnectionPage: React.FC = () => {
                 if (response.status === 200 && response.data.success) {
                     const access = response.data.body.access;
                     setAccess(access);
-                    const apiData: ApiResponse[] = response.data.body.listConnection;
+                    const apiData: Connection[] = response.data.body.listConnection;
                     const mappedData = apiData.map((item) => ({
                         id: item.id,
                         full_name: item.full_name || "Unknown",
                         username: item.username,
-                        profile_photo: item.profile_photo_path,
+                        profile_photo: item.profile_photo,
                     }));
 
                     setConnections(mappedData);
@@ -66,11 +64,22 @@ const ConnectionPage: React.FC = () => {
     const handleAction = async (id: string) => {
         try {
             setLoading(true);
-            const response = await axios.delete(`http://localhost:3000/api/connection/unconnect/${id}`, { 
+            const response = await axios.delete(`http://localhost:3000/api/connection/unconnect/${id}`, {
                 withCredentials: true
             })
             if (response.status === 200) {
                 setConnections(connections.filter(connections => connections.id !== id));
+                toast.toast({
+                    title: "Success",
+                    description: "unconnect connection",
+                    duration: 2000,
+                })
+            } else {
+                toast.toast({
+                    title: "Failed",
+                    description: "unconnect connection",
+                    duration: 2000,
+                })
             }
         } catch (error) {
             console.error(`Error during unconnect action:`, error);
@@ -84,9 +93,8 @@ const ConnectionPage: React.FC = () => {
             <div className="flex justify-between">
                 <aside className="hidden sm:block mr-2">
                     <ProfileSidebar
-                        full_name="asep"
-                        username="asepgemink"
-                        profile_photo_path="p"
+                        profile={profile}
+                        isLoading={isLoading}
                     />
                 </aside>
                 <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">

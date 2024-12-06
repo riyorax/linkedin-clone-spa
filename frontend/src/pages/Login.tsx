@@ -1,3 +1,4 @@
+import { useProfile } from "@/context/ProfileContext";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -29,6 +30,7 @@ const LoginPage = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false);
+  const { refetchProfile } = useProfile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,7 +59,7 @@ const LoginPage = () => {
           duration: 2000,
         })
 
-        navigate("/profile");
+        navigate("/feed");
       } else {
         toast.toast({
           title: "Login failed",
@@ -65,6 +67,7 @@ const LoginPage = () => {
           duration: 3000,
         })
       }
+      refetchProfile();
     } catch (e) {
       console.error(e)
       toast.toast({
