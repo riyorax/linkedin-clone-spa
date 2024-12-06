@@ -31,7 +31,7 @@ const formSchema = z
     path: ["confirmPassword"], // Error path
   });
 
-const Register = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
@@ -111,7 +111,7 @@ const Register = () => {
         </div>
         <Card className="overflow-hidden w-full max-w-md bg-white shadow-lg rounded-lg">
           <CardHeader className="space-y-2">
-            <CardTitle className="text-l sm:text-xl font-semibold text-center">Register To Connect!</CardTitle>
+            <CardTitle className="text-l sm:text-xl font-semibold text-center">RegisterPage To Connect!</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Form {...form}>
@@ -220,7 +220,7 @@ const Register = () => {
                   )}
                 />
                 <Button type="submit" className="text-[12px] sm:text-sm w-full sm:h-12 text-white bg-bluelinkedin rounded-full hover:bg-bluehover hover:text-white">
-                  Register
+                  RegisterPage
                 </Button>
               </form>
             </Form>
@@ -237,4 +237,4 @@ const Register = () => {
   )
 }
 
-export default Register;
+export default RegisterPage;

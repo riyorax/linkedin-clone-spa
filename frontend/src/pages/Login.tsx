@@ -25,7 +25,7 @@ const formSchema = z.object({
   password: z.string().min(8),
 })
 
-const Login = () => {
+const LoginPage = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false);
@@ -154,4 +154,4 @@ const Login = () => {
   )
 }
 
-export default Login;
+export default LoginPage;

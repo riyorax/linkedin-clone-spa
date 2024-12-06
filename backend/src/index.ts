@@ -3,6 +3,7 @@ import userRouter from "./routes/user.router";
 import profileRouter from "./routes/profile.router";
 import connectionRouter from "./routes/connection.router";
 import connectionRequestRouter from "./routes/connRequest.router";
+import chatRouter from "./routes/chat.router";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -27,6 +28,7 @@ app.use("/api", profileRouter);
 app.use("/api", connectionRouter);
 app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
+app.use("/api", chatRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
