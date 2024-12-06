@@ -26,8 +26,12 @@ interface Feed {
 }
 
 interface FeedResponse {
-    data: Feed[],
-    nextCursor: number | null;
+    success: boolean;
+    message: string;
+    body: {
+        cursor: number | null;
+        feeds: Feed[];
+    }
 }
 
 const fetchFeeds = async ({ pageParam = 0, limit = 10 }: FetchFeedsParams): Promise<FeedResponse> => {
@@ -54,11 +58,11 @@ const Feed: React.FC = () => {
             return fetchFeeds({ pageParam, limit });
         },
         initialPageParam: 0,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        getNextPageParam: (lastPage) => lastPage.body.cursor,
     });
 
     const { profile, isLoading } = useProfile();
-    const feeds = data?.pages.flatMap((page) => page.data) || [];
+    const feeds = data?.pages.flatMap((page) => page.body.feeds) || [];
 
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -71,7 +75,10 @@ const Feed: React.FC = () => {
                     fetchNextPage();
                 }
             },
-            { threshold: 1.0 }
+            {   
+                threshold: 0.5,
+                rootMargin: '100px'
+            }
         );
 
         if (loadMoreRef.current) {
@@ -106,7 +113,7 @@ const Feed: React.FC = () => {
                             viewer_id={profile?.id}
                         />
                     ))}
-                     <div ref={loadMoreRef} className="h-10 flex justify-center items-center">
+                     <div ref={loadMoreRef} className="h-20 flex justify-center items-center">
                         {isFetchingNextPage && <p>Loading...</p>}
                     </div>
                     {!hasNextPage && <p>No more feeds to load.</p>}

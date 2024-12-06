@@ -47,7 +47,7 @@ export const getPaginatedFeeds = async ({cursor, limit = 10, userId}) => {
         skip: cursor ? 1 : 0,
         cursor: cursor ? { id: cursor } : undefined,
         take: limit,
-        orderBy: { created_at: 'desc' },
+        orderBy: { updated_at: 'desc' },
         include: {
             users: {
                 select: {

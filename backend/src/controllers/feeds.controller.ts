@@ -12,9 +12,13 @@ export const getFeedsPaginated = async (req, res) => {
         const { feeds, nextCursor } = await feedsService.getPaginatedFeeds({limit, cursor, userId});
 
         return res.status(200).json({
-            data: feeds,
-            nextCursor,
-        })
+            success: true,
+            message: "Feeds fetched successfully",
+            body: {
+                cursor: nextCursor,
+                feeds
+            }
+        });
     }catch (e){
         res.status(500).json({
             error: "Internal Server Error",
