@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import axios from 'axios';
 import { useProfile } from '@/context/ProfileContext';
 import { useToast } from '@/hooks/use-toast';
+import RecommendSidebar from '@/components/Recommendation/Recommendation';
 
 const ConnectionRequestPage: React.FC = () => {
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
@@ -29,12 +30,11 @@ const ConnectionRequestPage: React.FC = () => {
           const apiData = response.data.body.listConnRequest;
           const mappedData = apiData.map((item) => ({
             id: item.id,
-            name: item.name || "Unknown",
+            full_name: item.full_name,
             username: item.username,
-            profile_photo: item.profile_photo,
-            createdAt: item.createdAt,
+            profile_photo_path: item.profile_photo_path,
+            created_at: item.created_at,
           }));
-
           setRequests(mappedData);
         } else {
           throw new Error(response.data.message || "Failed to fetch connection requests.");
@@ -83,14 +83,14 @@ const ConnectionRequestPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-8 lg:px-60 space-y-2">
-      <div className="flex justify-between">
-        <aside className="hidden sm:block mr-2">
+      <div className="flex justify-between space-x-2">
+        <aside className="hidden md:block">
           <ProfileSidebar
             profile={profile}
             isLoading={isLoading}
           />
         </aside>
-        <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">
+        <Card className="border-gray-300 w-full text-bluelinkedin">
           <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">Connection Request</h1>
           {loading ? (
             <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">Loading...</p>
@@ -111,6 +111,9 @@ const ConnectionRequestPage: React.FC = () => {
             </ul>
           )}
         </Card>
+        <aside className="hidden sm:block">
+          <RecommendSidebar />
+        </aside>
       </div>
     </div>
   );

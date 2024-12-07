@@ -81,3 +81,93 @@ export const deleteUserById = async (id: number) => {
         throw e;
     }
 };
+
+export const fetchUsers = async (
+    searchQuery: string | undefined,
+    userId: number | undefined,
+    cursor: number | undefined,
+    limit: number = 10
+) => {
+    try {
+        const users = await userClient.findMany({
+            where: searchQuery
+                ? {
+                    full_name: {
+                        contains: searchQuery,
+                        mode: 'insensitive',
+                    },
+                }
+                : undefined,
+            select: {
+                id: true,
+                full_name: true,
+                username: true,
+                profile_photo_path: true,
+                connection_connection_from_idTousers: userId
+                    ? {
+                        where: {
+                            to_id: userId,
+                        },
+                        select: {
+                            from_id: true,
+                        },
+                    }
+                    : false,
+
+                connection_request_connection_request_from_idTousers: userId
+                    ? {
+                        where: {
+                            to_id: userId,
+                        },
+                        select: {
+                            from_id: true,
+                            to_id: true,
+                        },
+                    }
+                    : false,
+
+                connection_request_connection_request_to_idTousers: userId
+                    ? {
+                        where: {
+                            from_id: userId,
+                        },
+                        select: {
+                            from_id: true,
+                            to_id: true,
+                        },
+                    }
+                    : false,
+            },
+            skip: cursor ? 1 : 0,
+            cursor: cursor ? { id: cursor } : undefined,
+            take: limit,
+            orderBy: { id: 'desc' },
+        });
+
+        const nextCursor = users.length === limit ? users[users.length - 1].id : null;
+
+        return {
+            users: users.map((user) => ({
+                id: user.id,
+                full_name: user.full_name,
+                username: user.username,
+                profile_photo_path: user.profile_photo_path,
+                status:
+                    userId
+                    ? BigInt(user.id) === BigInt(userId)
+                        ? "public"
+                        : user.connection_connection_from_idTousers?.length > 0
+                            ? "connected"
+                            : user.connection_request_connection_request_from_idTousers?.length
+                                ? "pending"
+                                : user.connection_request_connection_request_to_idTousers?.length
+                                    ? "sent"
+                                    : "unconnected"
+                    : "public"
+            })),
+            nextCursor,
+        };
+    } catch (e) {
+        throw e;
+    }
+};

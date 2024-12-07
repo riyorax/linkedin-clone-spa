@@ -6,6 +6,7 @@ import ProfileSidebar from "../components/Profile/ProfileSidebar";
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useProfile } from "@/context/ProfileContext";
+import RecommendSidebar from "@/components/Recommendation/Recommendation";
 
 interface Users {
     full_name: string;
@@ -75,7 +76,7 @@ const Feed: React.FC = () => {
                     fetchNextPage();
                 }
             },
-            {   
+            {
                 threshold: 0.5,
                 rootMargin: '100px'
             }
@@ -92,36 +93,45 @@ const Feed: React.FC = () => {
         };
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    if(!isLoading){
+    if (!isLoading) {
         return (
-            <div className="container flex mx-auto px-8 lg:px-60 space-x-2 ">
-                <aside>
+            <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
+                <aside className="hidden md:block">
                     <ProfileSidebar profile={profile} isLoading={isLoading} />
                 </aside>
                 <div className="flex flex-col flex-grow max-w-xl w-full">
-                    <FeedInput/>
+                    <FeedInput />
                     <hr className="my-4 border border-gray-300" />
                     {feeds.map((feed) => (
                         <FeedCard
                             key={feed.id}
-                            feed_id = {feed.id}
+                            feed_id={feed.id}
                             user_name={feed.users.full_name}
                             user_profile={feed.users.profile_photo_path}
                             content={feed.content}
                             updated_at={feed.updated_at}
-                            user_id ={feed.user_id}
+                            user_id={feed.user_id}
                             viewer_id={profile?.id}
                         />
                     ))}
-                     <div ref={loadMoreRef} className="h-20 flex justify-center items-center">
-                        {isFetchingNextPage && <p>Loading...</p>}
-                    </div>
-                    {!hasNextPage && <p>No more feeds to load.</p>}
+                    {isFetchingNextPage && (
+                        <div className="h-10 flex justify-center items-center w-full">
+                            <p>Loading...</p>
+                        </div>
+                    )}
+                    {!hasNextPage && (
+                        <div className="h-10 flex justify-center items-center w-full">
+                            <p className="text-[10px] sm:text-sm text-muted-foreground">No more feeds to load.</p>
+                        </div>
+                    )}
                 </div>
+                <aside className="hidden sm:block">
+                    <RecommendSidebar />
+                </aside>
             </div>
         );
     }
-   
+
 };
 
 export default Feed;

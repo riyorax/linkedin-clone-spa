@@ -8,6 +8,7 @@ import FeedCard from "@/components/Feed/FeedCard"
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileData } from "@/type/Profile";
 import { PenBox } from "lucide-react";
+import RecommendSidebar from "@/components/Recommendation/Recommendation";
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,8 +66,8 @@ const ProfilePage: React.FC = () => {
 
   const handleUpdateProfile = (updatedData: Partial<ProfileData>) => {
     setProfileData((prev) => prev ? { ...prev, ...updatedData } : null);
-    console.log("update:", updatedData);
-  };  
+    // console.log("update:", updatedData);
+  };
 
   const renderPage = () => {
     if (loading) {
@@ -85,6 +86,8 @@ const ProfilePage: React.FC = () => {
             name={profileData.name}
             username={profileData.username}
             profile_photo={profileData.profile_photo}
+            work_history={profileData.work_history}
+            skills={profileData.skills}
             connection_count={profileData.connection_count}
             onProfileUpdate={handleUpdateProfile}
           />
@@ -107,6 +110,7 @@ const ProfilePage: React.FC = () => {
                       updated_at={feed.updated_at}
                       user_id={feed.user_id}
                       viewer_id={Number(id)}
+                      feed_id={feed.id}
                     />
                   ))
                 ) : (
@@ -121,8 +125,15 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-8 lg:px-60 space-y-2">
-      {renderPage()}
+    <div className="container mx-auto px-8 lg:px-40 space-y-2">
+      <div className="flex justify-between space-x-2">
+        <div className="w-full">
+          {renderPage()}
+        </div>
+        <aside className="hidden sm:block">
+          <RecommendSidebar />
+        </aside>
+      </div>
     </div>
   );
 };

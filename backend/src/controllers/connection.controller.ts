@@ -87,3 +87,32 @@ export const deleteConnection = async (req, res) => {
         });
     }
 }
+
+export const getConnectionRecommendations = async (req, res) => {
+    try {
+        console.log("connRequest");
+        if (req.user !== null) {
+            const id = BigInt(req.user.userId);
+            const connRequest = await connectionService.getConnectionRecommendations(id);
+            return res.status(200).json({
+                success: true,
+                message: "connections recommendation fetched successfully",
+                body: {
+                    recommendation: connRequest,
+                }
+            })
+        } else {
+            res.status(401).json({
+                success: false,
+                message: "You're not allowed to access this resource",
+                error: null,
+            })
+        }
+    } catch (e) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong while fetching connections recommendation.",
+            error: e,
+        });
+    }
+}

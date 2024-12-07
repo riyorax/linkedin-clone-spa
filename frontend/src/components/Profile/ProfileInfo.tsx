@@ -17,10 +17,12 @@ interface ProfileProps {
   username: string;
   profile_photo: string;
   connection_count: number;
+  work_history: string;
+  skills: string;
   onProfileUpdate: (updatedData: Partial<ProfileData>) => void;
 }
 
-const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, connection_count, onProfileUpdate }) => {
+const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, work_history, skills, connection_count, onProfileUpdate }) => {
   const [acc, setAcc] = useState(access);
   const [status, setStatus] = useState(status_request);
   const [loading, setLoading] = useState(false);
@@ -137,7 +139,7 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
 
   return (
     <>
-      <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
+      <Card className="overflow-hidden shadow-none border-gray-300 border">
         <div className="relative h-32 sm:h-48">
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none">
             <rect width="100%" height="100%" fill="#EAEAEA" rx="3" />
@@ -169,10 +171,14 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
         onClose={() => setIsEditModalOpen(false)}
         userId={id}
         initialData={{
-          username,
-          name,
-          workHistory: "",
-          skills: "",
+          username: username,
+          name: name,
+          workHistory: work_history,
+          skills: skills,
+          profile_photo:
+            profile_photo !== "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png"
+              ? profile_photo
+              : undefined,
         }}
         onProfileUpdate={onProfileUpdate}
       />
