@@ -153,13 +153,17 @@ export const fetchUsers = async (
                 username: user.username,
                 profile_photo_path: user.profile_photo_path,
                 status:
-                    user.connection_connection_from_idTousers?.length > 0
-                        ? "connected"
-                        : user.connection_request_connection_request_from_idTousers?.length
-                            ? "pending"
-                            : user.connection_request_connection_request_to_idTousers?.length
-                                ? "sent"
-                                : "unconnected",
+                    userId
+                    ? BigInt(user.id) === BigInt(userId)
+                        ? "public"
+                        : user.connection_connection_from_idTousers?.length > 0
+                            ? "connected"
+                            : user.connection_request_connection_request_from_idTousers?.length
+                                ? "pending"
+                                : user.connection_request_connection_request_to_idTousers?.length
+                                    ? "sent"
+                                    : "unconnected"
+                    : "public"
             })),
             nextCursor,
         };

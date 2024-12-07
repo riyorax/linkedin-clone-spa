@@ -53,7 +53,7 @@ const FeedInputPopUp: React.FC = ({})=>{
 
     return (
         <>
-            <button className="flex-grow w-full h-12 px-4 border rounded-full text-left bg-white border-gray-400 hover:bg-gray-100" onClick={() => setIsOpen(true)}>Start a post</button>
+            <button className="text-[10px] sm:text-sm flex-grow w-full h-8 sm:h-12 px-4 border rounded-full text-left bg-white border-gray-400 hover:bg-gray-100" onClick={() => setIsOpen(true)}>Start a post</button>
             {isOpen && (
                 <FeedPost
                 onSubmit={(content) => feedMutation.mutate({ content })}

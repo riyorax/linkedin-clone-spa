@@ -2,6 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { Profile } from "@/type/Profile";
+import { Button } from "../ui/button";
+import { LogIn } from "lucide-react";
 
 interface ProfileSidebarProps {
   profile: Profile | null;
@@ -16,24 +18,20 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ profile, isLoading }) =
 
   if (!profile || isLoading) {
     return (
-      <Card className="overflow-hidden border-gray-300 border max-w-[225px] animate-pulse">
-        <div className="relative h-20 bg-gray-200" />
-        <CardContent className="relative pt-10 pb-4">
-          <div className="absolute -top-12 left-6 w-20 h-20 bg-gray-200 rounded-full border-4 border-white shadow-md" />
-          <div className="flex justify-between items-start">
-            <div className="w-full">
-              <div className="h-4 bg-gray-200 rounded mt-2 w-3/4" />
-              <div className="h-3 bg-gray-200 rounded mt-1 w-1/2" />
-              <div className="pt-10 h-3 bg-gray-200 rounded w-full" />
-            </div>
-          </div>
-        </CardContent>
+      <Card className="overflow-hidden border-gray-300 border w-[225px]">
+        <div className="p-4 justify-between items-start space-y-6">
+          <p className="text-sm text-gray-500">Connect with more people now!</p>
+        <Button className="w-full sm:w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105" onClick={() => navigate("/login")}>
+          <LogIn size={20} />
+          <span>Login To Connect</span>
+        </Button>
+        </div>
       </Card>
     );
   }
 
   return (
-    <Card className="overflow-hidden border-gray-300 border max-w-[225px]">
+    <Card className="overflow-hidden border-gray-300 border w-[225px]">
       <div className="relative h-20">
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="58" fill="none">
           <rect width="1200" height="1200" fill="#EAEAEA" rx="3" />

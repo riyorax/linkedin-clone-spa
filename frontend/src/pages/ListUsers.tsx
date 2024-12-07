@@ -4,6 +4,8 @@ import { ListUserCard } from '@/components/ListUsers/ListUserCard'
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
+import ProfileSidebar from "@/components/Profile/ProfileSidebar";
+import { useProfile } from "@/context/ProfileContext";
 
 interface UsersFeedsParams {
     pageParam: number;
@@ -23,9 +25,9 @@ interface UserResponse {
     success: boolean;
     message: string;
     body: {
-        access: string; 
-        data: User[];  
-        nextCursor: number | null; 
+        access: string;
+        data: User[];
+        nextCursor: number | null;
     };
 }
 
@@ -100,25 +102,40 @@ const Feed: React.FC = () => {
         };
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+    const { profile, isLoading } = useProfile();
+
     return (
-        <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
-            <div className="flex flex-col flex-grow w-full">
-                <hr className="my-4 border border-gray-300" />
-                {users.map((user) => (
-                    <ListUserCard
-                        key={user.id}
-                        access={access}
-                        id={user.id}
-                        name={user.full_name}
-                        profile_photo={user.profile_photo_path}
-                        username={user.username}
-                        status={user.status}
+        <div className="container mx-auto px-8 lg:px-40 space-y-2">
+            <div className="flex justify-between">
+                <aside className="hidden sm:block mr-2">
+                    <ProfileSidebar
+                        profile={profile}
+                        isLoading={isLoading}
                     />
-                ))}
-                <div ref={loadMoreRef} className="h-10 flex justify-center items-center">
-                    {isFetchingNextPage && <p>Loading...</p>}
+                </aside>
+                <div className="flex flex-col flex-grow w-full">
+                    {users.map((user) => (
+                        <ListUserCard
+                            key={user.id}
+                            access={access}
+                            id={user.id}
+                            name={user.full_name}
+                            profile_photo={user.profile_photo_path}
+                            username={user.username}
+                            status_request={user.status}
+                        />
+                    ))}
+                    {isFetchingNextPage && (
+                        <div className="h-10 flex justify-center items-center w-full">
+                            <p>Loading...</p>
+                        </div>
+                    )}
+                    {!hasNextPage && (
+                        <div className="h-10 flex justify-center items-center w-full">
+                            <p className="text-[10px] sm:text-sm text-muted-foreground">No more users to load.</p>
+                        </div>
+                    )}
                 </div>
-                {!hasNextPage && <p className="text-sm">No more user to load.</p>}
             </div>
         </div>
     );

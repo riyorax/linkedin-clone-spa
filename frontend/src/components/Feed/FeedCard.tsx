@@ -39,17 +39,17 @@ const FeedCard: React.FC<Props> = ({ feed_id, user_name, user_profile, content, 
     return(
         <div className="bg-white rounded-lg border-gray-300 border my-1">
             <div className="flex justify-between">
-                <div className="flex items-center space-x-4 my-2 mx-4">
-                    <img src = {user_profile} alt = {user_name} className="w-12 h-12 object-cover rounded-full" ></img>
+                <div className="flex items-center space-x-4 my-4 mx-4">
+                    <img src = {user_profile} alt = {user_name} className="w-8 h-8 sm:w-12 sm:h-12 object-cover rounded-full" ></img>
                     <div>
-                        <p className="font-semibold">{user_name}</p>
-                        <p className="text-sm text-gray-500">{postedTime(updated_at)}</p>
+                        <p className="text-sm sm:text-l font-semibold">{user_name}</p>
+                        <p className="text-[10px] sm:text-sm text-gray-500">{postedTime(updated_at)}</p>
                     </div>
                 </div>
                 {user_id === viewer_id && <FeedCardPopUp feed_id = {feed_id} currentContent={content}/>}
             </div>
             <div className="mb-3 mx-3">
-                <p>{content}</p>
+            <p className="text-[10px] sm:text-sm text-muted-foreground">{content}</p>
             </div>
             
         </div>

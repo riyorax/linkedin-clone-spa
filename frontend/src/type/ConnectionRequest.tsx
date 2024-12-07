@@ -1,7 +1,7 @@
 export interface ConnectionRequest {
     id: string;
-    name: string;
+    full_name: string;
     username: string;
-    profile_photo: string;
-    createdAt: string;
+    profile_photo_path: string;
+    created_at: string;
 }

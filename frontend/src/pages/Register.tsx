@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { EyeOff, Eye } from "lucide-react";
 import { useState } from "react";
+import { useProfile } from "@/context/ProfileContext";
 
 const formSchema = z
   .object({
@@ -36,6 +37,7 @@ const Register = () => {
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { refetchProfile } = useProfile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,6 +75,7 @@ const Register = () => {
       const success = response.data.success;
 
       if (success) {
+        refetchProfile();
         toast.toast({
           title: "Registration successful",
           description: "Automatically logging you in..., Redirecting to profile...",

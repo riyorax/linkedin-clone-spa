@@ -8,7 +8,7 @@ import ConnectionRequestPage from "./pages/ConnectionRequest";
 import ConnectionPage from "./pages/Connection";
 import ListUserPage from "./pages/ListUsers";
 import Notfound from "./components/Error/Notfound";
-import Logout from "./components/Logout";
+import Logout from "./pages/Logout";
 import Feed from "./pages/Feed";
 import { Toaster } from "./components/ui/toaster";
 import { ProfileProvider } from "@/context/ProfileContext";

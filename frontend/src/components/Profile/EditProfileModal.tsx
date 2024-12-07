@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { X } from 'lucide-react'
+import { Trash } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { ProfileData } from "@/type/Profile";
 import axios from 'axios'
@@ -219,9 +219,9 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
                   variant="outline"
                   size="icon"
                   onClick={handleRemovePhoto}
-                  className="flex-shrink-0 text-[10px] sm:text-sm"
+                  className="w-20 flex-shrink-0 text-[10px] sm:text-sm"
                 >
-                  <X className="h-1 w-1 sm:h-4 sm:w-4" />
+                  <Trash className="h-1 w-1 sm:h-4 sm:w-4" />
                   <span className="sr-only">Remove photo</span>
                 </Button>
               )}

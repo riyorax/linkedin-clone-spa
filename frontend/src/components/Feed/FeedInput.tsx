@@ -9,7 +9,7 @@ const FeedInput: React.FC = ()=>{
     return (
       <div className="flex flex-col bg-white p-4 rounded-lg space-y-3 border-gray-300 border">
         <div className="flex items-center">
-          <img src={profile?.profile_photo} alt="Profile" className="w-12 h-12 rounded-full object-cover mr-2"/>
+          <img src={profile?.profile_photo} alt="Profile" className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover mr-2"/>
           <FeedInputPopUp/>
         </div>
       </div>
