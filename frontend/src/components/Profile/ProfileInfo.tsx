@@ -17,10 +17,12 @@ interface ProfileProps {
   username: string;
   profile_photo: string;
   connection_count: number;
+  work_history: string;
+  skills: string;
   onProfileUpdate: (updatedData: Partial<ProfileData>) => void;
 }
 
-const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, connection_count, onProfileUpdate }) => {
+const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name, username, profile_photo, work_history, skills, connection_count, onProfileUpdate }) => {
   const [acc, setAcc] = useState(access);
   const [status, setStatus] = useState(status_request);
   const [loading, setLoading] = useState(false);
@@ -169,10 +171,14 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
         onClose={() => setIsEditModalOpen(false)}
         userId={id}
         initialData={{
-          username,
-          name,
-          workHistory: "",
-          skills: "",
+          username: username,
+          name: name,
+          workHistory: work_history,
+          skills: skills,
+          profile_photo:
+            profile_photo !== "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png"
+              ? profile_photo
+              : undefined,
         }}
         onProfileUpdate={onProfileUpdate}
       />

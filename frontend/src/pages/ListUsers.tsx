@@ -5,13 +5,13 @@ import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 
-interface FetchFeedsParams {
+interface UsersFeedsParams {
     pageParam: number;
     limit: number;
     searchQuery: string | null;
 }
 
-interface Feed {
+interface User {
     id: number;
     full_name: string;
     username: string;
@@ -19,17 +19,17 @@ interface Feed {
     status: string;
 }
 
-interface FeedResponse {
+interface UserResponse {
     success: boolean;
     message: string;
     body: {
         access: string; 
-        data: Feed[];  
+        data: User[];  
         nextCursor: number | null; 
     };
 }
 
-const fetchFeeds = async ({ pageParam = 0, limit = 10, searchQuery }: FetchFeedsParams): Promise<FeedResponse> => {
+const fetchUsers = async ({ pageParam = 0, limit = 10, searchQuery }: UsersFeedsParams): Promise<UserResponse> => {
     const { data } = await axios.get("http://localhost:3000/api/users", {
         params: {
             cursor: pageParam > 0 ? pageParam : undefined,
@@ -66,13 +66,13 @@ const Feed: React.FC = () => {
         queryKey: ["users", { limit: 10, searchQuery: debouncedSearchQuery }] as const,
         queryFn: ({ queryKey, pageParam }) => {
             const [, { limit }] = queryKey;
-            return fetchFeeds({ pageParam, limit, searchQuery: debouncedSearchQuery });
+            return fetchUsers({ pageParam, limit, searchQuery: debouncedSearchQuery });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage) => lastPage.body.nextCursor,
     });
 
-    const feeds = data?.pages.flatMap((page) => page.body.data) || [];
+    const users = data?.pages.flatMap((page) => page.body.data) || [];
     const access = data?.pages[0]?.body.access || "public";
 
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -104,15 +104,15 @@ const Feed: React.FC = () => {
         <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
             <div className="flex flex-col flex-grow w-full">
                 <hr className="my-4 border border-gray-300" />
-                {feeds.map((feed) => (
+                {users.map((user) => (
                     <ListUserCard
-                        key={feed.id}
+                        key={user.id}
                         access={access}
-                        id={feed.id}
-                        name={feed.full_name}
-                        profile_photo={feed.profile_photo_path}
-                        username={feed.username}
-                        status={feed.status}
+                        id={user.id}
+                        name={user.full_name}
+                        profile_photo={user.profile_photo_path}
+                        username={user.username}
+                        status={user.status}
                     />
                 ))}
                 <div ref={loadMoreRef} className="h-10 flex justify-center items-center">

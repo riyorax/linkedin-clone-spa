@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
 
   const handleUpdateProfile = (updatedData: Partial<ProfileData>) => {
     setProfileData((prev) => prev ? { ...prev, ...updatedData } : null);
-    console.log("update:", updatedData);
+    // console.log("update:", updatedData);
   };  
 
   const renderPage = () => {
@@ -85,6 +85,8 @@ const ProfilePage: React.FC = () => {
             name={profileData.name}
             username={profileData.username}
             profile_photo={profileData.profile_photo}
+            work_history={profileData.work_history}
+            skills={profileData.skills}
             connection_count={profileData.connection_count}
             onProfileUpdate={handleUpdateProfile}
           />
@@ -106,7 +108,8 @@ const ProfilePage: React.FC = () => {
                       content={feed.content}
                       updated_at={feed.updated_at}
                       user_id={feed.user_id}
-                      viewer_id={Number(id)}
+                      viewer_id={Number(id)} 
+                      feed_id={feed.id}                    
                     />
                   ))
                 ) : (

@@ -1,16 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertTriangle, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { ProfileData } from "@/type/Profile";
 import axios from 'axios'
+import { useProfile } from '@/context/ProfileContext'
 
 interface EditProfileModalProps {
   isOpen: boolean
@@ -32,12 +32,13 @@ interface FormErrors {
   workHistory?: string
   skills?: string
   profile_photo?: string
-  general?: string
 }
 
 export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfileUpdate }: EditProfileModalProps) {
+  const { refetchProfile } = useProfile();
   const [formData, setFormData] = useState(initialData)
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
+  const [previousPhoto, setPreviousPhoto] = useState<string | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const toast = useToast();
@@ -51,12 +52,14 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setProfilePhoto(e.target.files[0])
+      setPreviousPhoto(initialData.profile_photo)
       setErrors(prev => ({ ...prev, profile_photo: '' }))
     }
   }
 
   const handleRemovePhoto = () => {
     setProfilePhoto(null)
+    setPreviousPhoto(formData.profile_photo)
     setFormData(prev => ({ ...prev, profile_photo: undefined }))
     const fileInput = document.getElementById('profile_photo') as HTMLInputElement
     if (fileInput) fileInput.value = ''
@@ -82,12 +85,15 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
     setIsLoading(true)
     const submitData = new FormData()
     Object.entries(formData).forEach(([key, value]) => {
-        if (value !== undefined) {
-            submitData.append(key, value)
-        }
+      if (value !== undefined) {
+        submitData.append(key, value)
+      }
     })
     if (profilePhoto) {
-        submitData.append('profile_photo', profilePhoto)
+      submitData.append('profile_photo', profilePhoto)
+    }
+    if (previousPhoto) {
+      submitData.append('previous_photo', previousPhoto)
     }
 
     try {
@@ -106,8 +112,9 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           description: "User data updated successfully.",
           duration: 2000,
         })
-        console.log(response.data.body);
+        // console.log(response.data.body);
         onProfileUpdate(response.data.body);
+        refetchProfile();
         onClose()
       } else {
         toast.toast({
@@ -116,15 +123,31 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           duration: 2000,
         })
       }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unknown error occurred."
-      setErrors({ general: errorMessage })
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const message = e.response.data.message || "An error occurred";
+        toast.toast({
+          title: "Edit Failed",
+          description: message,
+          duration: 3000,
+        });
+      } else {
+        toast.toast({
+          title: "Edit Failed",
+          description: (e as Error).message || "An unexpected error occurred.",
+          duration: 2000,
+        });
+      }
     } finally {
       setIsLoading(false);
-      onClose();
     }
   }
+  
+  useEffect(() => {
+    setFormData(initialData);
+    setProfilePhoto(null);
+    setPreviousPhoto(undefined);
+  }, [initialData]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -133,12 +156,6 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           <DialogTitle className="text-center text-bluelinkedin text-lg sm:text-xl md:text-2xl">Edit Profile</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="text-[10px] sm:text-sm space-y-4">
-          {errors.general && (
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>{errors.general}</AlertDescription>
-            </Alert>
-          )}
           <div className="space-y-2">
             <Label htmlFor="username" className="text-[10px] sm:text-sm">Username</Label>
             <Input
