@@ -8,6 +8,7 @@ import FeedCard from "@/components/Feed/FeedCard"
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileData } from "@/type/Profile";
 import { PenBox } from "lucide-react";
+import RecommendSidebar from "@/components/Recommendation/Recommendation";
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,7 +67,7 @@ const ProfilePage: React.FC = () => {
   const handleUpdateProfile = (updatedData: Partial<ProfileData>) => {
     setProfileData((prev) => prev ? { ...prev, ...updatedData } : null);
     // console.log("update:", updatedData);
-  };  
+  };
 
   const renderPage = () => {
     if (loading) {
@@ -108,8 +109,8 @@ const ProfilePage: React.FC = () => {
                       content={feed.content}
                       updated_at={feed.updated_at}
                       user_id={feed.user_id}
-                      viewer_id={Number(id)} 
-                      feed_id={feed.id}                    
+                      viewer_id={Number(id)}
+                      feed_id={feed.id}
                     />
                   ))
                 ) : (
@@ -125,7 +126,14 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-8 lg:px-40 space-y-2">
-      {renderPage()}
+      <div className="flex justify-between space-x-2">
+        <div className="w-full">
+          {renderPage()}
+        </div>
+        <aside className="hidden sm:block">
+          <RecommendSidebar />
+        </aside>
+      </div>
     </div>
   );
 };

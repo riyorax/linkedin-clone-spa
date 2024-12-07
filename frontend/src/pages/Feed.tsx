@@ -96,7 +96,7 @@ const Feed: React.FC = () => {
     if (!isLoading) {
         return (
             <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
-                <aside className="hidden sm:block">
+                <aside className="hidden md:block">
                     <ProfileSidebar profile={profile} isLoading={isLoading} />
                 </aside>
                 <div className="flex flex-col flex-grow max-w-xl w-full">
@@ -126,7 +126,7 @@ const Feed: React.FC = () => {
                     )}
                 </div>
                 <aside className="hidden sm:block">
-                    <RecommendSidebar profile={profile} isLoading={isLoading} />
+                    <RecommendSidebar />
                 </aside>
             </div>
         );

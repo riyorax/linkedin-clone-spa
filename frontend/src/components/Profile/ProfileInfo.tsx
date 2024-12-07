@@ -139,7 +139,7 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
 
   return (
     <>
-      <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
+      <Card className="overflow-hidden shadow-none border-gray-300 border">
         <div className="relative h-32 sm:h-48">
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none">
             <rect width="100%" height="100%" fill="#EAEAEA" rx="3" />

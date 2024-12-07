@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useProfile } from '@/context/ProfileContext';
 import { useToast } from '@/hooks/use-toast';
+import RecommendSidebar from '@/components/Recommendation/Recommendation';
 
 const ConnectionPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -90,8 +91,8 @@ const ConnectionPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-8 lg:px-40 space-y-2">
-            <div className="flex justify-between">
-                <aside className="hidden sm:block mr-2">
+            <div className="flex justify-between space-x-2">
+                <aside className="hidden md:block">
                     <ProfileSidebar
                         profile={profile}
                         isLoading={isLoading}
@@ -119,6 +120,9 @@ const ConnectionPage: React.FC = () => {
                         </ul>
                     )}
                 </Card>
+                <aside className="hidden sm:block">
+                    <RecommendSidebar />
+                </aside>
             </div>
         </div>
     );

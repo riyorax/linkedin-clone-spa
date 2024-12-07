@@ -6,6 +6,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import ProfileSidebar from "@/components/Profile/ProfileSidebar";
 import { useProfile } from "@/context/ProfileContext";
+import RecommendSidebar from "@/components/Recommendation/Recommendation";
 
 interface UsersFeedsParams {
     pageParam: number;
@@ -106,8 +107,8 @@ const Feed: React.FC = () => {
 
     return (
         <div className="container mx-auto px-8 lg:px-40 space-y-2">
-            <div className="flex justify-between">
-                <aside className="hidden sm:block mr-2">
+            <div className="flex justify-between space-x-2">
+                <aside className="hidden md:block">
                     <ProfileSidebar
                         profile={profile}
                         isLoading={isLoading}
@@ -136,6 +137,9 @@ const Feed: React.FC = () => {
                         </div>
                     )}
                 </div>
+                <aside className="hidden sm:block">
+                    <RecommendSidebar />
+                </aside>
             </div>
         </div>
     );
