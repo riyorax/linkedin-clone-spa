@@ -6,6 +6,7 @@ import ProfileSidebar from "../components/Profile/ProfileSidebar";
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useProfile } from "@/context/ProfileContext";
+import RecommendSidebar from "@/components/Recommendation/Recommendation";
 
 interface Users {
     full_name: string;
@@ -124,6 +125,9 @@ const Feed: React.FC = () => {
                         </div>
                     )}
                 </div>
+                <aside className="hidden sm:block">
+                    <RecommendSidebar profile={profile} isLoading={isLoading} />
+                </aside>
             </div>
         );
     }

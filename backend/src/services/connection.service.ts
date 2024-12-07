@@ -29,7 +29,7 @@ export const countMutualConnections = async (userId) => {
               AND c1.to_id = c2.from_id
             WHERE c1.from_id = ${userId};
         `;
-        
+
         const count = Number(mutual[0].mutual_connections);
         return count;
     } catch (e) {
@@ -77,13 +77,15 @@ export const acceptConnection = async (fromId: number, toId: number) => {
             // insert connection
             const insertedConnections = await tx.connection.createManyAndReturn({
                 data: [
-                    { from_id: fromId, 
-                        to_id: toId, 
-                        created_at: new Date() 
+                    {
+                        from_id: fromId,
+                        to_id: toId,
+                        created_at: new Date()
                     },
-                    { from_id: toId, 
-                        to_id: fromId, 
-                        created_at: new Date() 
+                    {
+                        from_id: toId,
+                        to_id: fromId,
+                        created_at: new Date()
                     },
                 ],
             });
@@ -103,7 +105,7 @@ export const acceptConnection = async (fromId: number, toId: number) => {
 
         return newConnection;
     } catch (e) {
-        throw e;        
+        throw e;
     }
 }
 
@@ -134,9 +136,92 @@ export const deleteConnection = async (fromId: number, toId: number) => {
 
             return deleted;
         });
-    
+
         return deleted;
     } catch (e) {
-        throw e;        
+        throw e;
     }
 }
+
+export const getConnectionRecommendations = async (userId: bigint) => {
+    try {
+      const directConnections = await prisma.connection.findMany({
+        where: {
+          from_id: userId,
+        },
+      });
+  
+      const directConnectionIds = directConnections.map((conn) => conn.to_id);
+  
+      const secondDegreeConnections = await prisma.connection.findMany({
+        where: {
+          AND: [
+            { from_id: { in: directConnectionIds } },
+            { to_id: { notIn: [...directConnectionIds, userId] } },
+          ],
+        },
+        include: {
+          users_connection_to_idTousers: {
+            select: {
+              id: true,
+              full_name: true,
+              username: true,
+              profile_photo_path: true,
+            },
+          },
+        },
+      });
+  
+      const secondDegreeUsers = Array.from(
+        new Map(
+          secondDegreeConnections.map((conn) => [
+            conn.to_id,
+            {
+              level: 2,
+              ...conn.users_connection_to_idTousers,
+            },
+          ])
+        ).values()
+      );
+  
+      const secondDegreeConnectionIds = secondDegreeUsers.map((user) => user.id);
+  
+      const thirdDegreeConnections = await prisma.connection.findMany({
+        where: {
+          AND: [
+            { from_id: { in: secondDegreeConnectionIds } },
+            { to_id: { notIn: [...directConnectionIds, ...secondDegreeConnectionIds, userId] } },
+          ],
+        },
+        include: {
+          users_connection_to_idTousers: {
+            select: {
+              id: true,
+              full_name: true,
+              username: true,
+              profile_photo_path: true,
+            },
+          },
+        },
+      });
+  
+      const thirdDegreeUsers = Array.from(
+        new Map(
+          thirdDegreeConnections.map((conn) => [
+            conn.to_id,
+            {
+              level: 3,
+              ...conn.users_connection_to_idTousers,
+            },
+          ])
+        ).values()
+      );
+  
+      const recommendations = [...secondDegreeUsers, ...thirdDegreeUsers];
+  
+      return recommendations;
+    } catch (error) {
+      throw(error);
+    }
+  };
+  
