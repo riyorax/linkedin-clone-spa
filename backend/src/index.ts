@@ -28,7 +28,7 @@ app.use("/api", profileRouter);
 app.use("/api", connectionRouter);
 app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
-app.use("/image", express.static(path.resolve(__dirname, "../../uploads/images")));
+app.use("/image", express.static(path.resolve(__dirname, "../../upload/image")));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

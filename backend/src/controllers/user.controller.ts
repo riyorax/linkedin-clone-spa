@@ -5,6 +5,8 @@ import * as connectionService from "../services/connection.service";
 import * as connRequestService from "../services/connrequest.service";
 import * as feedService from "../services/feed.service";
 import "../utils/bigIntUtils";
+const fs = require('fs');
+const path = require('path');
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -273,46 +275,14 @@ export const logout = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
-    const { username, name, workHistory, skills, profilePhoto } = req.body;
-
-    if (!userId || isNaN(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID",
-        error: null,
-      });
-    }
-
-    const currentUser = await userService.getUserById(userId);
-    if (!currentUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-        error: null,
-      });
-    }
-
-    if (username && username !== currentUser.username) {
-      const existingUser = await userService.getUserByUsername(username);
-      if (existingUser) {
-        return res.status(409).json({
-          success: false,
-          message: "Username already exists",
-          error: null,
-        });
-      }
-    }
-
-    if (!profilePhoto) {
-      // hapus dari storage
-    }
+    const { username, name, workHistory, skills, new_profile_photo, profile_photo, previous_photo } = req.body;
 
     const updatedData = {
-      username: username || currentUser.username,
-      full_name: name || currentUser.full_name,
-      work_history: workHistory || currentUser.work_history,
-      skills: skills || currentUser.skills,
-      profile_photo_path: profilePhoto || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png",
+      username: username,
+      full_name: name,
+      work_history: workHistory,
+      skills: skills,
+      profile_photo_path: new_profile_photo || profile_photo || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png",
     };
 
     const updatedUser = await userService.updateUserData(userId, updatedData);
