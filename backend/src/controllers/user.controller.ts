@@ -8,17 +8,36 @@ import "../utils/bigIntUtils";
 
 export const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await userService.getAllUsers();
-    res.status(200).json({
-      data: allUsers,
-    });
+    const querySearch = req.query.searchQuery;
+    const limit = parseInt(req.query.limit) || 10;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor) : undefined;
+    let userId = 0;
+    let access = "public";
+    if (!req.user) {
+      userId = 0;
+    } else {
+      access = "authenticated"
+      userId = req.user.userId;
+    }
+
+    const { users, nextCursor } = await userService.fetchUsers(querySearch, userId, cursor, limit);
+  
+    return res.status(200).json({
+      success: true,
+      message:"User list fetched successfully",
+      body: {
+        access: access,
+        data: users,
+        nextCursor: nextCursor,
+      }
+    })
   } catch (e) {
     res.status(500).json({
       error: "Internal Server Error",
-      message: e.message || "Something went wrong while fetching users.",
-    });
+      message: e.message || "Something went wrong while fetching feeds"
+    })
   }
-};
+}
 
 export const getSelfProfile = async (req, res) => {
   try {
