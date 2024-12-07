@@ -121,7 +121,7 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-8 lg:px-60 space-y-2">
+    <div className="container mx-auto px-8 lg:px-40 space-y-2">
       {renderPage()}
     </div>
   );

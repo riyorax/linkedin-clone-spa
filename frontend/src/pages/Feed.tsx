@@ -94,7 +94,7 @@ const Feed: React.FC = () => {
 
     if(!isLoading){
         return (
-            <div className="container flex mx-auto px-8 lg:px-60 space-x-2 ">
+            <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
                 <aside>
                     <ProfileSidebar profile={profile} isLoading={isLoading} />
                 </aside>

@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ConnectionRequestPage from "./pages/ConnectionRequest";
 import ConnectionPage from "./pages/Connection";
+import ListUserPage from "./pages/ListUsers";
 import Notfound from "./components/Error/Notfound";
 import Logout from "./components/Logout";
 import Feed from "./pages/Feed";
@@ -30,6 +31,7 @@ function App() {
               element={<ConnectionRequestPage />}
             />
             <Route path="/connection/list/:id" element={<ConnectionPage />} />
+            <Route path="/users" element={<ListUserPage />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="*" element={<Notfound />} />
             <Route path="/feed" element={<Feed />} />

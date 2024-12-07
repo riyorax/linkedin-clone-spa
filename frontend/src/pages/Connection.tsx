@@ -89,7 +89,7 @@ const ConnectionPage: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-8 lg:px-60 space-y-2">
+        <div className="container mx-auto px-8 lg:px-40 space-y-2">
             <div className="flex justify-between">
                 <aside className="hidden sm:block mr-2">
                     <ProfileSidebar
