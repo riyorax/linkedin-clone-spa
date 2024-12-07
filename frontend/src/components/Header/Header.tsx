@@ -181,7 +181,7 @@ export function Header() {
                     </NavLink>
                     {/* Message */}
                     <NavLink
-                        to="/message"
+                        to="/chat"
                         className={({ isActive }) =>
                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                             } hover:text-black`
@@ -349,7 +349,7 @@ export function Header() {
                                 <DropdownMenuItem>
                                     {/* Message */}
                                     <NavLink
-                                        to="/message"
+                                        to="/chat"
                                         className={({ isActive }) =>
                                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                                             } hover:text-black`

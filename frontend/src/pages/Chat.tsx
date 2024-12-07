@@ -3,6 +3,7 @@ import axios from "axios";
 import ChatSidebar from "@/components/Chat/ChatSidebar";
 import NoChatSelected from "@/components/Chat/NoChatSelected";
 import ChatContainer from "@/components/Chat/ChatContainer";
+import { log } from "console";
 
 interface User {
     id: string;
@@ -12,12 +13,34 @@ interface User {
 }
 
 const ChatPage: React.FC = () => {
+    const [loggedInUser, setLoggedInUser] = useState<{
+        id: string;
+        username: string;
+        name: string;
+        profile_photo: string;
+    } | null>(null); // Define the shape of the authUser based on the response
     const [receiverId, setReceiverId] = useState<string | null>(null);
     const [messages, setMessages] = useState<string[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [isUsersLoading, setIsUsersLoading] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+
+     // Fetch the authenticated user
+     async function fetchAuthUser() {
+        try {
+            const response = await axios.get("http://localhost:3000/api/self/profile", {
+                withCredentials: true,
+            });
+            if (response.status === 200 && response.data.success) {
+                setLoggedInUser(response.data.body);
+            } else {
+                throw new Error(response.data.message || "Failed to fetch auth user.");
+            }
+        } catch (error) {
+            console.error("Error fetching auth user:", error);
+        }
+    }
 
     async function getFriends() {
         setIsUsersLoading(true);
@@ -56,6 +79,27 @@ const ChatPage: React.FC = () => {
         }
     }
 
+    async function sendMessage(message: string) {
+        console.log(receiverId);
+        if (!receiverId) return;
+        try {
+            const response = await axios.post(
+                `http://localhost:3000/api/chat/${receiverId}`,
+                { message },
+                {
+                    withCredentials: true,
+                }
+            );
+            if (response.status === 200 && response.data.success) {
+                setMessages((messages) => [...messages, message]);
+            } else {
+                throw new Error(response.data.message || "Failed to send message.");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     // Fetch messages when receiverId changes
     useEffect(() => {
         getMessages(receiverId);
@@ -64,6 +108,7 @@ const ChatPage: React.FC = () => {
     // Fetch users on component mount
     useEffect(() => {
         getFriends();
+        fetchAuthUser();
     }, []);
 
     return (
@@ -77,11 +122,21 @@ const ChatPage: React.FC = () => {
                             selectedUser={selectedUser}
                             setSelectedUser={(user) => {
                                 setSelectedUser(user);
-                                setReceiverId(user?._id || null);
+                                setReceiverId(user?.id || null);
                             }}
                         />
 
-                        {!selectedUser ? <NoChatSelected /> : <ChatContainer messages={messages} />}
+                        {!selectedUser ? (
+                            <NoChatSelected />
+                        ) : (
+                            <ChatContainer
+                            messages={messages}
+                            isMessagesLoading={isMessagesLoading}
+                            selectedUser={selectedUser}
+                            authUser={loggedInUser}
+                            onSendMessage={sendMessage}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

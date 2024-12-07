@@ -18,5 +18,8 @@ export default {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [
+    tailwindcssAnimate,
+    require('daisyui'),
+  ],
 };

@@ -47,7 +47,7 @@ export const getMessages = async (req, res) => {
 export const sendMessages = async (req, res) => {
     try {
         const { id:receiverId } = req.params;
-        const senderId = req.user.userId;
+        const senderId = parseInt(req.user.userId);
         const { message } = req.body;
 
         const newMessage = await chatService.sendMessages(senderId, receiverId, message);
