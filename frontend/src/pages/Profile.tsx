@@ -9,12 +9,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ProfileData } from "@/type/Profile";
 import { PenBox } from "lucide-react";
 import RecommendSidebar from "@/components/Recommendation/Recommendation";
+import ErrorPage from "@/components/Error/ErrorPage";
+import LoadingPage from "@/components/Loading/Loading";
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -49,13 +52,16 @@ const ProfilePage: React.FC = () => {
 
           setProfileData(mappedData);
         } else {
-          throw new Error(response.data.message || "Failed to fetch profile data.");
+          setError("Internal server error: Data retrieval failed.");
         }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unknown error occurred.";
-        console.error("Error fetching profile:", errorMessage);
-        setError(errorMessage);
+      } catch (e) {
+        if (axios.isAxiosError(e) && e.response) {
+          setStatus(e.response.status);
+          const message = e.response.data.message || "An error occurred";
+          setError(message);
+        } else {
+          setError((e as Error).message);
+        }
       } finally {
         setLoading(false);
       }
@@ -71,54 +77,75 @@ const ProfilePage: React.FC = () => {
 
   const renderPage = () => {
     if (loading) {
-      return <p>Loading profile...</p>;
+      return (
+        <LoadingPage />
+      )
     } else if (error) {
-      return <p>Error: {error}</p>;
+      return (
+        <ErrorPage
+          statusCode={status || 500}
+          message={error}
+          description=""
+        />
+      );
     } else if (!profileData) {
-      return <p>Profile not found.</p>;
+      return (
+        <ErrorPage
+          statusCode={404}
+          message="User not found"
+          description=""
+        />
+      );
     } else {
       return (
         <>
-          <ProfileInfo
-            id={id as string}
-            access={profileData.access}
-            status_request={profileData.status_request}
-            name={profileData.name}
-            username={profileData.username}
-            profile_photo={profileData.profile_photo}
-            work_history={profileData.work_history}
-            skills={profileData.skills}
-            connection_count={profileData.connection_count}
-            onProfileUpdate={handleUpdateProfile}
-          />
-          <Experience experience={profileData.work_history} />
-          <Skills skills={profileData.skills} />
-          {profileData.access !== "public" &&
-            <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
-              <CardContent className="p-4 sm:p-6 space-y-5">
-                <h3 className="text-sm sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center">
-                  <PenBox size={20} className="mr-2" />
-                  <span>10 Latest Feeds</span>
-                </h3>
-                {profileData.relevant_posts && profileData.relevant_posts.length > 0 ? (
-                  profileData.relevant_posts.map((feed) => (
-                    <FeedCard
-                      key={feed.id}
-                      user_name={profileData.name}
-                      user_profile={profileData.profile_photo}
-                      content={feed.content}
-                      updated_at={feed.updated_at}
-                      user_id={feed.user_id}
-                      viewer_id={Number(id)}
-                      feed_id={feed.id}
-                    />
-                  ))
-                ) : (
-                  <p className="text-[12px] sm:text-sm">No feeds listed yet.</p>
-                )}
-              </CardContent>
-            </Card>
-          }
+          <div className="flex justify-between space-x-2">
+            <div className="w-full">
+              <ProfileInfo
+                id={id as string}
+                access={profileData.access}
+                status_request={profileData.status_request}
+                name={profileData.name}
+                username={profileData.username}
+                profile_photo={profileData.profile_photo}
+                work_history={profileData.work_history}
+                skills={profileData.skills}
+                connection_count={profileData.connection_count}
+                onProfileUpdate={handleUpdateProfile}
+              />
+              <Experience experience={profileData.work_history} />
+              <Skills skills={profileData.skills} />
+              {profileData.access !== "public" &&
+                <Card className="overflow-hidden shadow-none border-gray-300 border my-1">
+                  <CardContent className="p-4 sm:p-6 space-y-5">
+                    <h3 className="text-sm sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center">
+                      <PenBox size={20} className="mr-2" />
+                      <span>10 Latest Feeds</span>
+                    </h3>
+                    {profileData.relevant_posts && profileData.relevant_posts.length > 0 ? (
+                      profileData.relevant_posts.map((feed) => (
+                        <FeedCard
+                          key={feed.id}
+                          user_name={profileData.name}
+                          user_profile={profileData.profile_photo}
+                          content={feed.content}
+                          updated_at={feed.updated_at}
+                          user_id={feed.user_id}
+                          viewer_id={Number(id)}
+                          feed_id={feed.id}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-[12px] sm:text-sm">No feeds listed yet.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              }
+            </div>
+            <aside className="hidden sm:block">
+              <RecommendSidebar />
+            </aside>
+          </div>
         </>
       );
     }
@@ -126,14 +153,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-8 lg:px-40 space-y-2">
-      <div className="flex justify-between space-x-2">
-        <div className="w-full">
-          {renderPage()}
-        </div>
-        <aside className="hidden sm:block">
-          <RecommendSidebar />
-        </aside>
-      </div>
+      {renderPage()}
     </div>
   );
 };

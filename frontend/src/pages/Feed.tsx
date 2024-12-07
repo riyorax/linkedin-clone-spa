@@ -7,6 +7,8 @@ import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useProfile } from "@/context/ProfileContext";
 import RecommendSidebar from "@/components/Recommendation/Recommendation";
+import LoadingPage from "@/components/Loading/Loading";
+import { useNavigate } from "react-router-dom";
 
 interface Users {
     full_name: string;
@@ -93,45 +95,53 @@ const Feed: React.FC = () => {
         };
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    if (!isLoading) {
-        return (
-            <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
-                <aside className="hidden md:block">
-                    <ProfileSidebar profile={profile} isLoading={isLoading} />
-                </aside>
-                <div className="flex flex-col flex-grow max-w-xl w-full">
-                    <FeedInput />
-                    <hr className="my-4 border border-gray-300" />
-                    {feeds.map((feed) => (
-                        <FeedCard
-                            key={feed.id}
-                            feed_id={feed.id}
-                            user_name={feed.users.full_name}
-                            user_profile={feed.users.profile_photo_path}
-                            content={feed.content}
-                            updated_at={feed.updated_at}
-                            user_id={feed.user_id}
-                            viewer_id={profile?.id}
-                        />
-                    ))}
-                    {isFetchingNextPage && (
-                        <div className="h-10 flex justify-center items-center w-full">
-                            <p>Loading...</p>
+    const navigate = useNavigate();
+    if (!profile) {
+        navigate(`/login`)
+    } else {
+        if (!isLoading) {
+            return (
+                <div className="container flex mx-auto px-8 lg:px-40 space-x-2 ">
+                    <aside className="hidden md:block">
+                        <ProfileSidebar profile={profile} isLoading={isLoading} />
+                    </aside>
+                    <div className="flex flex-col flex-grow max-w-xl w-full">
+                        <FeedInput />
+                        <hr className="my-4 border border-gray-300" />
+                        {feeds.map((feed) => (
+                            <FeedCard
+                                key={feed.id}
+                                feed_id={feed.id}
+                                user_name={feed.users.full_name}
+                                user_profile={feed.users.profile_photo_path}
+                                content={feed.content}
+                                updated_at={feed.updated_at}
+                                user_id={feed.user_id}
+                                viewer_id={profile?.id}
+                            />
+                        ))}
+                        <div ref={loadMoreRef} className="h-10 flex justify-center items-center w-full">
+                            {isFetchingNextPage && (
+                                <p>Loading...</p>
+                            )}
                         </div>
-                    )}
-                    {!hasNextPage && (
-                        <div className="h-10 flex justify-center items-center w-full">
-                            <p className="text-[10px] sm:text-sm text-muted-foreground">No more feeds to load.</p>
-                        </div>
-                    )}
+                        {!hasNextPage && (
+                            <div className="h-10 flex justify-center items-center w-full">
+                                <p className="text-[10px] sm:text-sm text-muted-foreground">No more feeds to load.</p>
+                            </div>
+                        )}
+                    </div>
+                    <aside className="hidden sm:block">
+                        <RecommendSidebar />
+                    </aside>
                 </div>
-                <aside className="hidden sm:block">
-                    <RecommendSidebar />
-                </aside>
-            </div>
-        );
+            );
+        } else {
+            return (
+                <LoadingPage />
+            )
+        }
     }
-
 };
 
 export default Feed;

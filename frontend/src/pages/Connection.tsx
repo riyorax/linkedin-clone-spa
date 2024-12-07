@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
-import ProfileSidebar from "../components/Profile/ProfileSidebar";
 import { ConnectionCard } from '../components/Connection/ConnectionCard'
 import { Connection } from '@/type/Connection'
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { useProfile } from '@/context/ProfileContext';
 import { useToast } from '@/hooks/use-toast';
 import RecommendSidebar from '@/components/Recommendation/Recommendation';
+import { useProfile } from '@/context/ProfileContext';
+import LoadingPage from '@/components/Loading/Loading';
+import ErrorPage from '@/components/Error/ErrorPage';
 
 const ConnectionPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [connections, setConnections] = useState<Connection[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [status, setStatus] = useState<number | null>(null);
     const [access, setAccess] = useState<string>('');
-    const { profile, isLoading } = useProfile();
+    const { profile } = useProfile();
     const toast = useToast();
 
     useEffect(() => {
@@ -41,19 +43,23 @@ const ConnectionPage: React.FC = () => {
                     const apiData: Connection[] = response.data.body.listConnection;
                     const mappedData = apiData.map((item) => ({
                         id: item.id,
-                        full_name: item.full_name || "Unknown",
+                        full_name: item.full_name,
                         username: item.username,
-                        profile_photo: item.profile_photo,
+                        profile_photo_path: item.profile_photo_path,
                     }));
 
                     setConnections(mappedData);
                 } else {
-                    throw new Error(response.data.message || "Failed to fetch connection requests.");
+                    setError("Internal server error: Data retrieval failed.");
                 }
-            } catch (err) {
-                const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-                console.error("Error fetching connection requests:", errorMessage);
-                setError(errorMessage);
+            } catch (e) {
+                if (axios.isAxiosError(e) && e.response) {
+                    setStatus(e.response.status);
+                    const message = e.response.data.message || "An error occurred";
+                    setError(message);
+                } else {
+                    setError((e as Error).message);
+                }
             } finally {
                 setLoading(false);
             }
@@ -82,50 +88,64 @@ const ConnectionPage: React.FC = () => {
                     duration: 2000,
                 })
             }
-        } catch (error) {
-            console.error(`Error during unconnect action:`, error);
+        } catch (e) {
+            if (axios.isAxiosError(e) && e.response) {
+                setStatus(e.response.status);
+                const message = e.response.data.message || "An error occurred";
+                setError(message);
+            } else {
+                setError((e as Error).message);
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    return (
-        <div className="container mx-auto px-8 lg:px-40 space-y-2">
-            <div className="flex justify-between space-x-2">
-                <aside className="hidden md:block">
-                    <ProfileSidebar
-                        profile={profile}
-                        isLoading={isLoading}
-                    />
-                </aside>
-                <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">
-                    <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">Connection</h1>
-                    {loading ? (
-                        <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">Loading...</p>
-                    ) : error ? (
-                        <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-red-500">{error}</p>
-                    ) : connections.length === 0 ? (
-                        <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">No connection at the moment.</p>
-                    ) : (
-                        <ul>
-                            {connections.map((connection) => (
-                                <li className="border-none" key={connection.id}>
-                                    <ConnectionCard
-                                        access={access}
-                                        connection={connection}
-                                        handleAction={handleAction}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </Card>
-                <aside className="hidden sm:block">
-                    <RecommendSidebar />
-                </aside>
+    if (loading) {
+        return (
+            <LoadingPage />
+        )
+    } else if (error) {
+        return (
+            <ErrorPage
+                statusCode={status || 500}
+                message={error}
+                description=""
+            />
+        );
+    } else {
+        return (
+            <div className="container mx-auto px-8 lg:px-40 space-y-2">
+                <div className="flex justify-between space-x-2">
+                    <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">
+                        <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">{profile?.id === id ? "My" : "People's"} Connection</h1>
+                        {loading ? (
+                            <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">Loading...</p>
+                        ) : error ? (
+                            <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-red-500">{error}</p>
+                        ) : connections.length === 0 ? (
+                            <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">No connection at the moment.</p>
+                        ) : (
+                            <ul>
+                                {connections.map((connection) => (
+                                    <li className="border-none" key={connection.id}>
+                                        <ConnectionCard
+                                            access={access}
+                                            connection={connection}
+                                            handleAction={handleAction}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </Card>
+                    <aside className="hidden md:flex">
+                        <RecommendSidebar />
+                    </aside>
+                </div>
             </div>
-        </div>
-    );
+        )
+    };
 }
 
 export default ConnectionPage;
