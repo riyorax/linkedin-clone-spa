@@ -3,7 +3,8 @@ import * as chatService from "../services/chat.service";
 
 export const getUsersForSidebar = async (req, res) => {
     try {
-        const listConnection = await getMutualConnection(req.user.userId);
+        const id = parseInt(req.user.userId);
+        const listConnection = await getMutualConnection(id);
         res.status(200).json({
             success: true,
             message: "List connection data fetched successfully",

@@ -4,10 +4,17 @@ import ChatSidebar from "@/components/Chat/ChatSidebar";
 import NoChatSelected from "@/components/Chat/NoChatSelected";
 import ChatContainer from "@/components/Chat/ChatContainer";
 
+interface User {
+    id: string;
+    full_name: string;
+    username: string;
+    profile_photo_path: string;
+}
+
 const ChatPage: React.FC = () => {
     const [receiverId, setReceiverId] = useState<string | null>(null);
     const [messages, setMessages] = useState<string[]>([]);
-    const [users, setUsers] = useState<string[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [isUsersLoading, setIsUsersLoading] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
