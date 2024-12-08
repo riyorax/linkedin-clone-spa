@@ -1,21 +1,25 @@
 import React from "react";
 import FeedInputPopUp from "./FeedInputPopUp";
 import { useProfile } from "@/context/ProfileContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 
-const FeedInput: React.FC = ()=>{
+const FeedInput: React.FC = () => {
   const { profile, isLoading } = useProfile();
-  if(!isLoading){
+  if (!isLoading) {
     return (
       <div className="flex flex-col bg-white p-4 rounded-lg space-y-3 border-gray-300 border">
-        <div className="flex items-center">
-          <img src={profile?.profile_photo} alt="Profile" className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover mr-2"/>
-          <FeedInputPopUp/>
+        <div className="flex items-center space-x-2">
+          <Avatar className="w-7 h-7 text-[8px] sm:text-sm sm:w-11 sm:h-10 flex items-center justify-center object-cover rounded-full border-2 border-white shadow-md bg-neutral-100">
+            <AvatarImage src={profile?.profile_photo} alt={profile?.name} />
+            <AvatarFallback>{profile?.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          </Avatar>
+          <FeedInputPopUp />
         </div>
       </div>
     );
   }
-    
+
 };
 
 export default FeedInput

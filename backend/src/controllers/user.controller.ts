@@ -274,8 +274,22 @@ export const logout = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
-    const { username, name, workHistory, skills, new_profile_photo, profile_photo, previous_photo } = req.body;
+    if (req.access == "public") {
+      return res.status(401).json({
+        success: false,
+        message: "You're not authenticated, log in to continue",
+        error: null,
+      })
+    }
+
+    if (req.access !== "owner") {
+      return res.status(401).json({
+        success: false,
+        message: "You're not allowed to access this resource",
+        error: null,
+      })
+    }
+    const { username, name, workHistory, skills, new_profile_photo, profile_photo } = req.body;
 
     const updatedData = {
       username: username,
@@ -285,7 +299,7 @@ export const updateUser = async (req, res) => {
       profile_photo_path: new_profile_photo || profile_photo || "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Sample_User_Icon.png/120px-Sample_User_Icon.png",
     };
 
-    const updatedUser = await userService.updateUserData(userId, updatedData);
+    const updatedUser = await userService.updateUserData(req.user.userId, updatedData);
 
     res.status(200).json({
       success: true,

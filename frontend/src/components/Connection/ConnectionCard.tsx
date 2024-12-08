@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { Mail, UserMinus } from "lucide-react";
+import { ArrowUpRightFromSquare, UserMinus } from "lucide-react";
 import { useState } from "react";
 
 interface ConnectionCardProps {
@@ -23,7 +23,7 @@ export function ConnectionCard({ access, connection, handleAction }: ConnectionC
                     <Button
                         onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/`);
+                            navigate(`/profile/${connection.id}`);
                         }}
                         onMouseEnter={() => {
                             setIsHovered(true); 
@@ -33,8 +33,8 @@ export function ConnectionCard({ access, connection, handleAction }: ConnectionC
                         }}
                         className="text-[10px] sm:text-sm h-8 w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105"
                     >
-                        <Mail size={20} />
-                        <span>Message</span>
+                        <ArrowUpRightFromSquare size={20} />
+                        <span>View Details</span>
                     </Button>
                     <Button
                         variant="outline"

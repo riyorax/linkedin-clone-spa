@@ -17,7 +17,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
 
     // Scroll to the bottom whenever the messages array changes
     useEffect(() => {
-        if (messageEndRef.current && messages){
+        if (messageEndRef.current && messages) {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
@@ -25,7 +25,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
     if (isMessagesLoading) {
         return (
             <div className="flex-1 flex flex-col overflow-auto">
-                <ChatHeader selectedUser={selectedUser} setSelectedUser={() => {}} />
+                <ChatHeader selectedUser={selectedUser} setSelectedUser={() => { }} />
                 <ChatSkeleton />
                 <ChatInput onSendMessage={onSendMessage} />
             </div>
@@ -34,9 +34,9 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
 
     return (
         <div className="flex-1 flex flex-col overflow-auto">
-            <ChatHeader selectedUser={selectedUser} setSelectedUser={() => {}} />
+            <ChatHeader selectedUser={selectedUser} setSelectedUser={() => { }} />
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
                 {messages.map((message) => (
                     <div
                         key={message.id}
@@ -44,7 +44,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
                         ref={messageEndRef}
                     >
                         <div className="chat-image avatar">
-                            <div className="size-10 rounded-full border">
+                            <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-full border">
                                 <img
                                     src={
                                         message.from_id === authUser?.id
@@ -52,21 +52,22 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
                                             : selectedUser?.profile_photo_path || "/avatar.png"
                                     }
                                     alt="profile pic"
+                                    className="w-full h-full object-cover"
                                 />
                             </div>
                         </div>
 
                         <div className="chat-header mb-1">
-                            <time className="text-xs opacity-50 ml-1">{formatMessageTime(message.timestamp)}</time>
+                            <time className="text-[10px] sm:text-xs opacity-50 ml-1">{formatMessageTime(message.timestamp)}</time>
                         </div>
 
-                        <div className="chat-bubble flex flex-col">
-                            {message.message && <p>{message.message}</p>}
+                        <div className="chat-bubble text-xs sm:text-base">
+                            {message.message && <p className="break-words">{message.message}</p>}
                         </div>
                     </div>
                 ))}
             </div>
-            
+
             <ChatInput onSendMessage={onSendMessage} />
         </div>
     );

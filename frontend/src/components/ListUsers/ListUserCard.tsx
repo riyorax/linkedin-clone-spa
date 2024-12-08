@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { Mail, Timer, UserMinus, UserPlus } from "lucide-react";
+import { ArrowUpRightFromSquare, Timer, UserMinus, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
@@ -122,7 +122,7 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
                         <Button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/`);
+                                navigate(`/profile/${id}`);
                             }}
                             onMouseEnter={() => {
                                 setIsHovered(true);
@@ -132,8 +132,8 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
                             }}
                             className="text-[10px] sm:text-sm h-8 w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105"
                         >
-                            <Mail size={20} />
-                            <span>Message</span>
+                            <ArrowUpRightFromSquare size={20} />
+                            <span>View Details</span>
                         </Button>
                         <Button
                             variant="outline"
