@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast'
 import { ProfileData } from "@/type/Profile";
 import axios from 'axios'
 import { useProfile } from '@/context/ProfileContext'
+import { useNavigate } from 'react-router-dom'
 
 interface EditProfileModalProps {
   isOpen: boolean
@@ -42,6 +43,7 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const toast = useToast();
+  const [respStatus, setRespStatus] = useState<number | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -95,7 +97,7 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
     if (previousPhoto) {
       submitData.append('previous_photo', previousPhoto)
     }
-    
+
     try {
       refetchProfile();
       const response = await axios.put(
@@ -105,6 +107,7 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          withCredentials: true,
         }
       )
       if (response.status === 200 && response.data.success) {
@@ -131,6 +134,7 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           description: message,
           duration: 3000,
         });
+        setRespStatus(e.response.status);
       } else {
         toast.toast({
           title: "Edit Failed",
@@ -142,12 +146,18 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
       setIsLoading(false);
     }
   }
-  
+
   useEffect(() => {
     setFormData(initialData);
     setProfilePhoto(null);
     setPreviousPhoto(undefined);
   }, [initialData]);
+
+
+  const navigate = useNavigate();
+  if (respStatus === 401) {
+    navigate(`/login`);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -241,5 +251,5 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
       </DialogContent>
     </Dialog>
   )
-}
+};
 

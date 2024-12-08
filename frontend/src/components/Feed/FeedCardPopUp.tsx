@@ -9,6 +9,7 @@ import {
 import FeedPost from './FeedPost';
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Edit } from 'lucide-react';
 
 interface Props {
   feed_id:number;
@@ -54,11 +55,7 @@ const FeedCardPopUp: React.FC<Props> = ({feed_id, currentContent}) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="p-2 hover:bg-gray-100 rounded-full">
-            <img
-              src="https://www.svgrepo.com/show/124304/three-dots.svg"
-              className="w-3 h-3"
-              alt="Options"
-            />
+            <Edit className="w-3 h-3" />
           </button>
         </DropdownMenuTrigger>
 

@@ -99,7 +99,6 @@ export const deleteConnection = async (req, res) => {
 
 export const getConnectionRecommendations = async (req, res) => {
     try {
-        console.log("connRequest");
         if (req.user !== null) {
             const id = BigInt(req.user.userId);
             const connRequest = await connectionService.getConnectionRecommendations(id);
