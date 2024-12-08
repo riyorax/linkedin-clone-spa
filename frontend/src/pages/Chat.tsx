@@ -117,8 +117,8 @@ const ChatPage: React.FC = () => {
     
 
     return (
-        <div className="h-full bg-neutral-100">
-            <div className="flex items-center justify-center px-4">
+        <div className="h-full">
+            <div className="container flex mx-auto px-8 lg:px-40 space-x-2">
                 <div className="bg-neutral-50 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
                     <div className="flex h-full rounded-lg overflow-hidden">
                         <ChatSidebar

@@ -1,6 +1,7 @@
 import React from "react";
 import FeedCardPopUp from "./FeedCardPopUp";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
     feed_id: number;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const FeedCard: React.FC<Props> = ({ feed_id, user_name, user_profile, content, updated_at, user_id, viewer_id }) => {
+    const navigate = useNavigate();
     function postedTime(updated_at: string): string {
         const now = new Date();
         const updated_at_time = new Date(updated_at);
@@ -40,7 +42,7 @@ const FeedCard: React.FC<Props> = ({ feed_id, user_name, user_profile, content, 
     return (
         <div className="bg-white rounded-lg border-gray-300 border my-1">
             <div className="flex justify-between">
-                <div className="flex items-center space-x-4 my-4 mx-4">
+                <div className="flex items-center space-x-4 my-4 mx-4 cursor-pointer" onClick={() => navigate(`/profile/${user_id}`)}>
                     <Avatar className="w-8 h-8 sm:w-12 sm:h-12 text-[8px] sm:text-sm flex items-center justify-center object-cover rounded-full border-2 border-white shadow-md bg-neutral-100">
                         <AvatarImage src={user_profile} alt={user_name} />
                         <AvatarFallback>{user_name.split(' ').map(n => n[0]).join('')}</AvatarFallback>

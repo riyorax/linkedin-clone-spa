@@ -21,12 +21,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
 
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-2 sm:p-4 w-full">
       <form onSubmit={sendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
             type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+            className="w-full input input-bordered text-[10px] rounded-lg input-xs sm:input-md"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -38,7 +38,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
           className="btn btn-sm btn-circle"
           disabled={!text.trim()}
         >
-          <Send size={22} />
+          <Send size={20} />
         </button>
       </form>
     </div>
