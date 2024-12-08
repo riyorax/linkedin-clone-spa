@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useProfile } from "@/context/ProfileContext";
 import ChatSidebar from "@/components/Chat/ChatSidebar";
 import NoChatSelected from "@/components/Chat/NoChatSelected";
 import ChatContainer from "@/components/Chat/ChatContainer";
-import { log } from "console";
+
 
 interface User {
     id: string;
@@ -13,34 +14,14 @@ interface User {
 }
 
 const ChatPage: React.FC = () => {
-    const [loggedInUser, setLoggedInUser] = useState<{
-        id: string;
-        username: string;
-        name: string;
-        profile_photo: string;
-    } | null>(null); // Define the shape of the authUser based on the response
+    const { profile: loggedInUser } = useProfile();
     const [receiverId, setReceiverId] = useState<string | null>(null);
     const [messages, setMessages] = useState<string[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [isUsersLoading, setIsUsersLoading] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
-
-     // Fetch the authenticated user
-     async function fetchAuthUser() {
-        try {
-            const response = await axios.get("http://localhost:3000/api/self/profile", {
-                withCredentials: true,
-            });
-            if (response.status === 200 && response.data.success) {
-                setLoggedInUser(response.data.body);
-            } else {
-                throw new Error(response.data.message || "Failed to fetch auth user.");
-            }
-        } catch (error) {
-            console.error("Error fetching auth user:", error);
-        }
-    }
+    const { socket } = useProfile(); // Access the socket from the context
 
     async function getFriends() {
         setIsUsersLoading(true);
@@ -80,18 +61,16 @@ const ChatPage: React.FC = () => {
     }
 
     async function sendMessage(message: string) {
-        console.log(receiverId);
         if (!receiverId) return;
         try {
             const response = await axios.post(
                 `http://localhost:3000/api/chat/${receiverId}`,
                 { message },
-                {
-                    withCredentials: true,
-                }
+                { withCredentials: true },
             );
             if (response.status === 200 && response.data.success) {
-                setMessages((messages) => [...messages, message]);
+                const newMessage = response.data.body.message; // The complete message object from the backend
+                setMessages((messages) => [...messages, newMessage]); // Add the new message to the state
             } else {
                 throw new Error(response.data.message || "Failed to send message.");
             }
@@ -100,19 +79,45 @@ const ChatPage: React.FC = () => {
         }
     }
 
-    // Fetch messages when receiverId changes
-    useEffect(() => {
-        getMessages(receiverId);
-    }, [receiverId]);
-
+    function subscribeToMessages() {
+        if (!loggedInUser || !selectedUser || !loggedInUser.id || !selectedUser.id) return;
+    
+        // Subscribe to "newMessage" events for the selected user
+        if (socket) {
+            socket.on("newMessage", (message) => {
+                // Check if the message belongs to the current chat
+                if (message.from_id === selectedUser.id || message.to_id === selectedUser.id) {
+                    setMessages((prevMessages) => [...prevMessages, message]);
+                }
+            });
+            console.log("Subscribed to new messages for user:", selectedUser.id);
+        }
+    }
+    
+    function unsubscribeFromMessages() {
+        if (socket) {
+            socket.off("newMessage"); // Unsubscribe from "newMessage" events
+            console.log("Unsubscribed from new messages");
+        }
+    }
+    
     // Fetch users on component mount
     useEffect(() => {
         getFriends();
-        fetchAuthUser();
     }, []);
+    
+    // Manage subscriptions when receiverId changes
+    useEffect(() => {
+        getMessages(receiverId);
+        subscribeToMessages();
+        return () => {
+            unsubscribeFromMessages();
+        };
+    }, [receiverId]);
+    
 
     return (
-        <div className="h-screen bg-neutral-100">
+        <div className="h-full bg-neutral-100">
             <div className="flex items-center justify-center px-4">
                 <div className="bg-neutral-50 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
                     <div className="flex h-full rounded-lg overflow-hidden">

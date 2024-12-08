@@ -1,5 +1,6 @@
 import { getMutualConnection } from "../services/connection.service";
 import * as chatService from "../services/chat.service";
+import { getReceiverSocketIds, io } from "../lib/socket";
 
 export const getUsersForSidebar = async (req, res) => {
     try {
@@ -53,6 +54,12 @@ export const sendMessages = async (req, res) => {
         const newMessage = await chatService.sendMessages(senderId, receiverId, message);
 
         // todo: realtime pake socket.io
+        const receiverSocketIds = getReceiverSocketIds(receiverId);
+        if (receiverSocketIds) {
+            receiverSocketIds.forEach((socketId) => {
+                io.to(socketId).emit("newMessage", newMessage);
+            });
+        }
 
         res.status(200).json({
             success: true,

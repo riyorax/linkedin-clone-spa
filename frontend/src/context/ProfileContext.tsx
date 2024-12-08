@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { io, Socket } from "socket.io-client";
 
 interface Profile {
   id: number;
@@ -12,9 +13,12 @@ interface ProfileContextType {
   profile: Profile | null;
   isLoading: boolean;
   refetchProfile: () => void;
+  socket: Socket | null;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
+
+let socketInstance: Socket | null = null; // Persistent socket instance
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -27,8 +31,25 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         withCredentials: true,
       });
       setProfile(response.data.body);
+
+      // Establish or reuse socket connection
+      if (!socketInstance) {
+        socketInstance = io("http://localhost:3000", {
+          query: { userId: response.data.body.id },
+          withCredentials: true,
+        });
+
+        // Handle socket events
+        socketInstance.on("connect", () => {
+          console.log("Socket connected:", socketInstance?.id);
+        });
+
+        socketInstance.on("disconnect", () => {
+          console.log("Socket disconnected");
+        });
+      }
     } catch (error) {
-      console.error("Failed to fetch profile:", error);
+      console.error("Failed to fetch profile or connect socket:", error);
       setProfile(null);
     } finally {
       setIsLoading(false);
@@ -37,6 +58,13 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     fetchProfile();
+
+    return () => {
+      if (socketInstance) {
+        socketInstance.disconnect();
+        socketInstance = null;
+      }
+    };
   }, []);
 
   return (
@@ -45,6 +73,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         profile,
         isLoading,
         refetchProfile: fetchProfile,
+        socket: socketInstance,
       }}
     >
       {children}

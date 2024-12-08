@@ -21,8 +21,8 @@ function App() {
         <main className="main-content mt-16 pb-2 left-0 w-full h-full z-10 border-b">
           <Routes>
             <Route path="/" element={<Feed />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route
               path="/connection/request"
