@@ -4,9 +4,8 @@ import { ListUserCard } from '@/components/ListUsers/ListUserCard'
 import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
-import ProfileSidebar from "@/components/Profile/ProfileSidebar";
-import { useProfile } from "@/context/ProfileContext";
 import RecommendSidebar from "@/components/Recommendation/Recommendation";
+import { Card } from "@/components/ui/card";
 
 interface UsersFeedsParams {
     pageParam: number;
@@ -103,18 +102,11 @@ const Feed: React.FC = () => {
         };
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    const { profile, isLoading } = useProfile();
-
     return (
         <div className="container mx-auto px-8 lg:px-40 space-y-2">
             <div className="flex justify-between space-x-2">
-                <aside className="hidden md:block">
-                    <ProfileSidebar
-                        profile={profile}
-                        isLoading={isLoading}
-                    />
-                </aside>
-                <div className="flex flex-col flex-grow w-full">
+                <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">
+                    <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">Users</h1>
                     {users.map((user) => (
                         <ListUserCard
                             key={user.id}
@@ -126,18 +118,18 @@ const Feed: React.FC = () => {
                             status_request={user.status}
                         />
                     ))}
-                    {isFetchingNextPage && (
-                        <div className="h-10 flex justify-center items-center w-full">
+                    <div ref={loadMoreRef} className="h-10 flex justify-center items-center w-full">
+                        {isFetchingNextPage && (
                             <p>Loading...</p>
-                        </div>
-                    )}
+                        )}
+                    </div>
                     {!hasNextPage && (
                         <div className="h-10 flex justify-center items-center w-full">
                             <p className="text-[10px] sm:text-sm text-muted-foreground">No more users to load.</p>
                         </div>
                     )}
-                </div>
-                <aside className="hidden sm:block">
+                </Card>
+                <aside className="hidden md:block">
                     <RecommendSidebar />
                 </aside>
             </div>

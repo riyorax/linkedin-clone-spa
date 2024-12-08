@@ -1,7 +1,16 @@
 import * as connectionService from '../services/connection.service';
+import * as userService from '../services/user.service';
 
 export const getMutualConnection = async (req, res) => {
     try {
+        const user = await userService.getUserById(req.params.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+                error: null,
+            });
+        }
         const listConnection = await connectionService.getMutualConnection(req.params.id);
         res.status(200).json({
             success: true,
@@ -71,7 +80,7 @@ export const deleteConnection = async (req, res) => {
                 success: false,
                 message: "Cannot delete this connection",
                 error: null,
-            })            
+            })
         }
 
         res.status(200).json({

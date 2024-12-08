@@ -95,8 +95,9 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
     if (previousPhoto) {
       submitData.append('previous_photo', previousPhoto)
     }
-
+    
     try {
+      refetchProfile();
       const response = await axios.put(
         `http://localhost:3000/api/profile/${userId}`,
         submitData,
@@ -114,7 +115,6 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
         })
         // console.log(response.data.body);
         onProfileUpdate(response.data.body);
-        refetchProfile();
         onClose()
       } else {
         toast.toast({

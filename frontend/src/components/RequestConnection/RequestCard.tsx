@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ConnectionRequest } from "@/type/ConnectionRequest"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { UserMinus, UserPlus } from 'lucide-react';
+import { useState } from 'react';
 
 interface ConnectionRequestCardProps {
     request: ConnectionRequest;
@@ -12,12 +14,54 @@ interface ConnectionRequestCardProps {
 
 export function ConnectionRequestCard({ request, handleAction }: ConnectionRequestCardProps) {
     const navigate = useNavigate();
+    const [isHovered, setIsHovered] = useState(false);
+
+    const renderButton = () => {
+        return (
+            <div className="flex flex-col space-y-2">
+                <Button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleAction("accept", "post", request.id);
+                    }}
+                    onMouseEnter={() => {
+                        setIsHovered(true);
+                    }}
+                    onMouseLeave={() => {
+                        setIsHovered(false);
+                    }}
+                    className="text-[10px] sm:text-sm h-8 w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105"
+                >
+                    <UserPlus size={20} />
+                    <span>Accept</span>
+                </Button>
+                <Button
+                    variant="outline"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleAction("reject", "delete", request.id);
+                    }}
+                    onMouseEnter={() => {
+                        setIsHovered(true);
+                    }}
+                    onMouseLeave={() => {
+                        setIsHovered(false);
+                    }}
+                    className="text-[10px] md:text-sm h-8 w-auto border-2 border-red-500 text-red-500 bg-white rounded-full hover:bg-red-500 hover:text-white hover:scale-105"
+                >
+                    <UserMinus size={20} />
+                    <span>Reject</span>
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <Card className="border-none shadow-none">
-            <CardContent 
-            onClick={() => navigate(`/profile/${request.id}`)}
-            className="cursor-pointer text-sm sm:text-lg p-4 sm:flex items-center justify-between border-t-2 hover:bg-gray-100"
+            <CardContent
+                onClick={() => navigate(`/profile/${request.id}`)}
+                className={`cursor-pointer text-sm sm:text-lg p-6 sm:flex items-center justify-between border-t-2 hover:bg-gray-100 ${isHovered ? "hover:bg-transparent" : ""
+                    }`}
             >
                 <div className="flex items-center space-x-4">
                     <div>
@@ -35,27 +79,7 @@ export function ConnectionRequestCard({ request, handleAction }: ConnectionReque
                     </div>
                 </div>
 
-                <div className="mt-4 flex space-x-2">
-                    <Button
-                        onClick={(e) => {
-                            e.stopPropagation(); 
-                            handleAction("accept", "post", request.id);
-                        }}
-                        className="text-[10px] sm:text-sm h-4 sm:h-8 w-full sm:w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105"
-                    >
-                        Accept
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={(e) => {
-                            e.stopPropagation(); 
-                            handleAction("reject", "delete", request.id);
-                        }}
-                        className="text-[10px] sm:text-sm h-4 sm:h-8 w-full sm:w-auto border-2 border-red-500 text-red-500 bg-white rounded-full hover:bg-red-500 hover:text-white hover:scale-105"
-                    >
-                        Reject
-                    </Button>
-                </div>
+                {renderButton()}
             </CardContent>
         </Card>
     );
