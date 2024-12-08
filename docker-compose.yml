@@ -12,6 +12,7 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+      
   backend:
     build:
       context: ./backend
@@ -23,6 +24,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    command: >
+      sh -c "npx prisma db push &&
+             npm run prisma-seed &&
+             npm run start"
   # frontend:
   # redis:
   #   image: redis:latest

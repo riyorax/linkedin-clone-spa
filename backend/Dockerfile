@@ -18,5 +18,3 @@ RUN npx prisma generate
 ENV PORT=3000
 
 EXPOSE 3000
-
-CMD ["sh", "./migrate-and-start.sh"]

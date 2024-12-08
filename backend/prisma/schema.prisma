@@ -21,7 +21,7 @@ model chat {
 model connection {
   from_id                         BigInt
   to_id                           BigInt
-  created_at                      DateTime @db.Timestamptz(6)
+  created_at                      DateTime @default(now()) @db.Timestamptz(6)
   users_connection_from_idTousers users    @relation("connection_from_idTousers", fields: [from_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "connection_from_id_fk_user_id")
   users_connection_to_idTousers   users    @relation("connection_to_idTousers", fields: [to_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "connection_to_id_fk_user_id")
 
@@ -31,7 +31,7 @@ model connection {
 model connection_request {
   from_id                                 BigInt
   to_id                                   BigInt
-  created_at                              DateTime @db.Timestamptz(6)
+  created_at                              DateTime @default(now()) @db.Timestamptz(6)
   users_connection_request_from_idTousers users    @relation("connection_request_from_idTousers", fields: [from_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "connection_request_from_id_fk_user_id")
   users_connection_request_to_idTousers   users    @relation("connection_request_to_idTousers", fields: [to_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "connection_request_to_id_fk_user_id")
 
@@ -41,7 +41,7 @@ model connection_request {
 model feed {
   id         BigInt   @id @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
   content    String
   user_id    BigInt
   users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "feed_user_id_fk_user_id")
