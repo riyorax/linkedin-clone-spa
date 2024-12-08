@@ -3,15 +3,16 @@ import userRouter from "./routes/user.router";
 import profileRouter from "./routes/profile.router";
 import connectionRouter from "./routes/connection.router";
 import connectionRequestRouter from "./routes/connRequest.router";
+import chatRouter from "./routes/chat.router";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import feedRouter from "./routes/feed.router";
 import path from "path";
+import { app, server } from "./lib/socket"
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
@@ -28,8 +29,9 @@ app.use("/api", profileRouter);
 app.use("/api", connectionRouter);
 app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
+app.use("/api", chatRouter);
 app.use("/image", express.static(path.resolve(__dirname, "../../upload/image")));
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -109,6 +109,30 @@ export const acceptConnection = async (fromId: number, toId: number) => {
     }
 }
 
+// Gajadi, kayaknya yg mutual udah bener
+// export const getConnectedUsers = async (userId: bigint) => {
+//     try {
+//         const connectedUsers = await prisma.connection.findMany({
+//             where: { from_id: userId },
+//             select: {
+//                 users_connection_to_idTousers: { // This is the relation to the `users` model
+//                     select: {
+//                         id: true,
+//                         full_name: true,
+//                         username: true,
+//                         profile_photo_path: true,
+//                     },
+//                 },
+//             },
+//         });
+
+//         // Extracting only the user details
+//         return connectedUsers.map(connection => connection.users_connection_to_idTousers);
+//     } catch (e) {
+//         throw e;
+//     }
+// };
+
 export const deleteConnection = async (fromId: number, toId: number) => {
     try {
         const deleted = await prisma.$transaction(async (tx) => {

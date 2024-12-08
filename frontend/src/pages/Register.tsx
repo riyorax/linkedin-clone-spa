@@ -32,7 +32,7 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-const Register = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
@@ -105,7 +105,7 @@ const Register = () => {
     <>
       {profile ? (
         <>
-          <div className="container mx-auto py-20 px-8 lg:px-40 mx-auto flex flex-col items-center justify-center space-y-6">
+          <div className="container mx-auto py-20 px-8 lg:px-40 flex flex-col items-center justify-center space-y-6">
             <div className="flex w-full items-center justify-center space-x-2 sm:space-x-4">
               <Link to="/" className="flex-shrink-0">
                 <svg className="text-bluelinkedin h-4 w-4 sm:h-8 sm:w-8" fill="currentColor" viewBox="0 0 24 24">
@@ -269,4 +269,4 @@ const Register = () => {
   )
 }
 
-export default Register;
+export default RegisterPage;
