@@ -165,7 +165,6 @@ export const register = async (req, res) => {
       email,
       name: fullname,
       password,
-      confirmPassword,
     } = req.body;
     const newUser = await userService.createUser(
       username,
@@ -213,25 +212,34 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await userService.getUserByEmail(email);
+    const { identifier, password } = req.body;
+
+    // First, try to find the user by username
+    let user = await userService.getUserByUsername(identifier);
+
+    // If no user found by username, try finding by email
+    if (!user) {
+      user = await userService.getUserByEmail(identifier);
+    }
+
+    // If user is still not found, return an error
     if (!user) {
       return res.status(200).json({
         success: false,
-        message: "Incorect email or password",
-        error: "Incorect email or password",
+        message: "Incorrect username/email or password",
+        error: null,
       });
     }
 
-    const isMatch = await authService.comparePassword(
-      password,
-      user.password_hash,
-    );
+    // Compare the provided password with the stored password hash
+    const isMatch = await authService.comparePassword(password, user.password_hash);
+
+    // If password doesn't match, return an error
     if (!isMatch) {
       return res.status(200).json({
         success: false,
-        message: "Incorect email or password",
-        error: "Incorect email or password",
+        message: "Incorrect username/email or password",
+        error: null,
       });
     }
 

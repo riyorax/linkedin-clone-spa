@@ -65,8 +65,9 @@ export const addNewFeed = async (req, res) => {
         });
     } catch (e) {
         res.status(500).json({
-            error: "Internal Server Error",
-            message: e.message || "Something went wrong while inserting feeds"
+            success: false,
+            message: e.message || "Something went wrong while posting feeds",
+            error: e,
         })
     }
 }
@@ -102,8 +103,9 @@ export const editFeedContent = async (req, res) => {
         });
     } catch (e) {
         res.status(500).json({
-            error: "Internal Server Error",
-            message: e.message || "Something went wrong while editing feeds"
+            success: false,
+            message: e.message || "Something went wrong while editing feeds",
+            error: e,
         })
     }
 }
@@ -139,8 +141,9 @@ export const deleteFeedById = async (req, res) => {
         });
     } catch (e) {
         res.status(500).json({
-            error: "Internal Server Error",
-            message: e.message || "Something went wrong while deleting feeds"
+            success: false,
+            message: e.message || "Something went wrong while deleting feeds",
+            error: e,
         })
     }
 }

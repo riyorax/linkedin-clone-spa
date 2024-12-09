@@ -2,6 +2,7 @@ import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as userService from "../services/user.service";
 import path from "path";
+import { isFilledFullname, isFilledUsername } from "./validateinput";
 
 const BASEURL = "http://localhost:3000/";
 
@@ -89,6 +90,9 @@ export const formDataMiddleware = (req, res, next) => {
           });
         }
       }
+
+      if (await isFilledUsername(req, res)) return;
+      if (await isFilledFullname(req, res)) return;
 
       if (req.files && req.files.profile_photo) {
         const fileBuffer = req.files.profile_photo[0].buffer;

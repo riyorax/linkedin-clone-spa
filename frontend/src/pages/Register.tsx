@@ -21,9 +21,12 @@ import { useProfile } from "@/context/ProfileContext";
 
 const formSchema = z
   .object({
-    username: z.string().min(4, "Username must be at least 4 characters."),
-    email: z.string().email("Please enter a valid email."),
-    fullname: z.string().min(4, "Full name must be at least 4 characters."),
+    username: z.string().min(4, "Username must be at least 4 characters.").regex(
+      /^[^\s@]+$/,
+      "Username cannot be in the form of an email address."
+    ).max(255, "Username must be at most 255 characters."),
+    email: z.string().email("Please enter a valid email.").max(255, "Email must be at most 255 characters."),
+    fullname: z.string().min(4, "Full name must be at least 4 characters.").max(255, "Fullname must be at most 255 characters."),
     password: z.string().min(8, "Password must be at least 8 characters."),
     confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters."),
   })
@@ -67,7 +70,6 @@ const RegisterPage = () => {
         email: values.email,
         name: values.fullname,
         password: values.password,
-        confirmPassword: values.confirmPassword,
       },
         {
           withCredentials: true

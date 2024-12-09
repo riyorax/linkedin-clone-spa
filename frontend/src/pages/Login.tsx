@@ -22,7 +22,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 
 const formSchema = z.object({
-  email: z.string().email(),
+  identifier: z.string().max(255, "Identifier must be at most 255 characters."),
   password: z.string().min(8),
 })
 
@@ -35,7 +35,7 @@ const LoginPage = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   })
@@ -43,7 +43,7 @@ const LoginPage = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await axios.post("http://localhost:3000/api/login", {
-        email: values.email,
+        identifier: values.identifier,
         password: values.password,
       },
         {
@@ -129,13 +129,13 @@ const LoginPage = () => {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="identifier"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[12px] sm:text-sm">Email</FormLabel>
+                        <FormLabel className="text-[12px] sm:text-sm">Identifier</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="your@email.com"
+                            placeholder="your@email.com or yourusername"
                             className="text-[12px] sm:text-sm border border-gray-300 rounded-md p-2"
                             {...field}
                           />

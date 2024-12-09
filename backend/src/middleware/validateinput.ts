@@ -5,10 +5,27 @@ export const isFilledUsername = (req, res) => {
         return res.status(200).json({
             success: false,
             message: "Missing required fields: username",
-            body: {
-                token: null,
-            },
+            error: null,
         });
+    }
+    else {
+        if (req.body.username.length > 255) {
+            return res.status(200).json({
+                success: false,
+                message: "Username is too long",
+                error: null,
+            });
+        }
+
+        // Check username regex must be not same as email regex
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (emailRegex.test(req.body.username)) {
+            return res.status(200).json({
+                success: false,
+                message: "Username cannot be an email",
+                error: null,
+            });
+        }
     }
 };
 
@@ -17,10 +34,26 @@ export const isFilledEmail = (req, res) => {
         return res.status(200).json({
             success: false,
             message: "Missing required fields: email",
-            body: {
-                token: null,
-            },
+            error: null,
         });
+    }
+    else {
+        if (req.body.email.length > 255) {
+            return res.status(200).json({
+                success: false,
+                message: "Email is too long",
+                error: null,
+            });
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(req.body.email)) {
+            return res.status(200).json({
+                success: false,
+                message: "Invalid email format",
+                error: null,
+            });
+        }
     }
 };
 
@@ -29,10 +62,17 @@ export const isFilledFullname = (req, res) => {
         return res.status(200).json({
             success: false,
             message: "Missing required fields: fullname",
-            body: {
-                token: null,
-            },
+            error: null,
         });
+    }
+    else {
+        if (req.body.name.length > 255) {
+            return res.status(200).json({
+                success: false,
+                message: "Fullname is too long",
+                error: null,
+            });
+        }
     }
 };
 
@@ -46,43 +86,43 @@ export const isFilledPassword = (req, res) => {
             },
         });
     }
-};
-
-export const isFilledConfirmPassword = (req, res) => {
-    if (!req.body.confirmPassword) {
-        return res.status(200).json({
-            success: false,
-            message: "Missing required fields: confirmPassword",
-            body: {
-                token: null,
-            },
-        });
+    else {
+        if (req.body.password.length > 255) {
+            return res.status(200).json({
+                success: false,
+                message: "Password is too long",
+                body: {
+                    token: null,
+                },
+            });
+        }
     }
 };
 
-export const passwordLength = (req, res) => {
-    if (req.body.password.length < 8) {
-        return res.status(200).json({
-            success: false,
-            message: "Password must be at least 8 characters long",
-            body: {
-                token: null,
-            },
-        });
-    }
-};
+// export const isFilledConfirmPassword = (req, res) => {
+//     if (!req.body.confirmPassword) {
+//         return res.status(200).json({
+//             success: false,
+//             message: "Missing required fields: confirmPassword",
+//             body: {
+//                 token: null,
+//             },
+//         });
+//     }
+// };
 
-export const comparePassword = (req, res) => {
-    if (req.body.password !== req.body.confirmPassword) {
-        return res.status(200).json({
-            success: false,
-            message: "Passwords do not match",
-            body: {
-                token: null,
-            },
-        });
-    }
-};
+
+// export const comparePassword = (req, res) => {
+//     if (req.body.password !== req.body.confirmPassword) {
+//         return res.status(200).json({
+//             success: false,
+//             message: "Passwords do not match",
+//             body: {
+//                 token: null,
+//             },
+//         });
+//     }
+// };
 
 export const emailExist = async (req, res) => {
     try {
@@ -91,9 +131,7 @@ export const emailExist = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: "User with the given email already exists.",
-                body: {
-                    token: null,
-                },
+                error: null,
             });
         }
     } catch (e) {
@@ -108,9 +146,7 @@ export const usernameExist = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: "User with the given username already exists.",
-                body: {
-                    token: null,
-                },
+                error: null,
             });
         }
     } catch (e) {
@@ -148,9 +184,7 @@ export const validateRegister = async (req, res, next) => {
     if (await isFilledEmail(req, res)) return;
     if (await isFilledFullname(req, res)) return;
     if (await isFilledPassword(req, res)) return;
-    if (await isFilledConfirmPassword(req, res)) return;
-    if (await passwordLength(req, res)) return;
-    if (await comparePassword(req, res)) return;
+    // if (await comparePassword(req, res)) return;
     if (await usernameExist(req, res)) return;
     if (await emailExist(req, res)) return;
 
@@ -201,9 +235,7 @@ export const isFilledContent = (req, res, next) => {
         return res.status(200).json({
             success: false,
             message: "Missing required fields: content",
-            body: {
-                token: null,
-            },
+            error: null,
         });
     }
     next();
