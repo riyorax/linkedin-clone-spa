@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import ErrorPage from "../Error/ErrorPage";
+import { useProfile } from "@/context/ProfileContext";
 
 interface Profile {
     access: string;
@@ -24,6 +25,7 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
     const [error, setError] = useState<string | null>(null);
     const [respStatus, setRespStatus] = useState<number | null>(null);
     const toast = useToast();
+    const { refetchProfile } = useProfile();
 
     const handleAction = async (
         endpoint: string,
@@ -31,6 +33,7 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
         newStatus: string
     ) => {
         try {
+            refetchProfile();
             const url = `http://localhost:3000/api/connection/${endpoint}/${id}`;
             const response = method === "post" ? await axios.post(url, {}, { withCredentials: true }) : await axios.delete(url, { withCredentials: true });
             if (response.status === 200) {
@@ -45,6 +48,7 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
                     title: `Failed`,
                     description: `${endpoint} connection`,
                     duration: 2000,
+                    variant: "destructive"
                 })
             }
         } catch (e) {
@@ -52,8 +56,20 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
                 setRespStatus(e.response.status);
                 const message = e.response.data.message || "An error occurred";
                 setError(message);
+                toast.toast({
+                    title: `Failed`,
+                    description: message,
+                    duration: 2000,
+                    variant: "destructive"
+                })
             } else {
                 setError((e as Error).message);
+                toast.toast({
+                    title: `Failed`,
+                    description: error,
+                    duration: 2000,
+                    variant: "destructive"
+                })
             }
         }
     };
@@ -182,7 +198,9 @@ export const ListUserCard: React.FC<Profile> = ({ access, id, profile_photo, nam
         }
     };
 
-    if (error) {
+    if (respStatus == 401) {
+        navigate(`/login`)
+    } else if (error) {
         return (
             <ErrorPage
                 statusCode={respStatus || 500}

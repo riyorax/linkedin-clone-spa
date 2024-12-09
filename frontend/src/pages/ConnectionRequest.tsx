@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import RecommendSidebar from '@/components/Recommendation/Recommendation';
 import LoadingPage from '@/components/Loading/Loading';
 import ErrorPage from '@/components/Error/ErrorPage';
+import { useProfile } from '@/context/ProfileContext';
 
 const ConnectionRequestPage: React.FC = () => {
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
@@ -14,6 +15,7 @@ const ConnectionRequestPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
   const toast = useToast();
+  const { refetchProfile } = useProfile();
 
   useEffect(() => {
     const fetchConnectionRequest = async () => {
@@ -61,6 +63,7 @@ const ConnectionRequestPage: React.FC = () => {
     id: string,
   ) => {
     try {
+      refetchProfile();
       setLoading(true);
       const url = `http://localhost:3000/api/connection/${endpoint}/${id}`;
       const response = method === "post" ? await axios.post(url, {}, { withCredentials: true }) : await axios.delete(url, { withCredentials: true });
@@ -76,6 +79,7 @@ const ConnectionRequestPage: React.FC = () => {
           title: "Failed",
           description: `${endpoint} connection`,
           duration: 2000,
+          variant: "destructive"
         })
       }
     } catch (e) {

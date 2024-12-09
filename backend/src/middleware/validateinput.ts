@@ -195,7 +195,7 @@ export const validateFeedParam = async (req, res, next) => {
 };
 
 export const isFilledContent = (req, res, next) => {
-    const userId = req.user.userId;
+    // const userId = req.user.userId;
     const content = req.body.content;
     if (!content) {
         return res.status(200).json({

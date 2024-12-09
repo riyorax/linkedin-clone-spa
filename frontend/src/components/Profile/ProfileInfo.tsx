@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { ProfileData } from "@/type/Profile";
 import ErrorPage from "../Error/ErrorPage";
+import cover  from '@/assets/default-cover.jpg';
 
 interface ProfileProps {
   id: string;
@@ -57,6 +58,7 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
           title: `Failed`,
           description: `${endpoint} connection`,
           duration: 2000,
+          variant: "destructive"
         })
       }
     } catch (e) {
@@ -157,10 +159,8 @@ const ProfileInfo: React.FC<ProfileProps> = ({ id, access, status_request, name,
     return (
       <>
         <Card className="overflow-hidden shadow-none border-gray-300 border">
-          <div className="relative h-32 sm:h-48">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none">
-              <rect width="100%" height="100%" fill="#EAEAEA" rx="3" />
-            </svg>
+          <div className="relative">
+            <img className="w-full" src={cover} alt="Default Cover" />
           </div>
           <CardContent className="relative pt-16 sm:pt-20 pb-4">
             <Avatar className="absolute -top-12 sm:-top-16 left-4 w-24 h-24 sm:w-32 sm:h-32 border-4 border-white">

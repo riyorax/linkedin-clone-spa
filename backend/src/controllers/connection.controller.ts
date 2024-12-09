@@ -12,10 +12,12 @@ export const getMutualConnection = async (req, res) => {
             });
         }
         const listConnection = await connectionService.getMutualConnection(req.params.id);
+        const name = await userService.getUserById(req.params.id);
         res.status(200).json({
             success: true,
             message: "List connection data fetched successfully",
             body: {
+                name: name?.full_name,
                 access: req.access,
                 listConnection: listConnection,
             },
@@ -101,12 +103,12 @@ export const getConnectionRecommendations = async (req, res) => {
     try {
         if (req.user !== null) {
             const id = BigInt(req.user.userId);
-            const connRequest = await connectionService.getConnectionRecommendations(id);
+            const recommendation = await connectionService.getConnectionRecommendations(id);
             return res.status(200).json({
                 success: true,
                 message: "connections recommendation fetched successfully",
                 body: {
-                    recommendation: connRequest,
+                    recommendation: recommendation,
                 }
             })
         } else {

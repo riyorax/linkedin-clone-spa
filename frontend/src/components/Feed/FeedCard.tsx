@@ -44,7 +44,7 @@ const FeedCard: React.FC<Props> = ({ feed_id, user_name, user_profile, content, 
             <div className="flex justify-between">
                 <div className="flex items-center space-x-4 my-4 mx-4 cursor-pointer" onClick={() => navigate(`/profile/${user_id}`)}>
                     <Avatar className="w-8 h-8 sm:w-12 sm:h-12 text-[8px] sm:text-sm flex items-center justify-center object-cover rounded-full border-2 border-white shadow-md bg-neutral-100">
-                        <AvatarImage src={user_profile} alt={user_name} />
+                        <AvatarImage className="rounded-full" src={user_profile} alt={user_name} />
                         <AvatarFallback>{user_name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
                     <div>

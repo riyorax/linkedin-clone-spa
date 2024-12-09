@@ -124,6 +124,7 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           title: "Edit Failed",
           description: response.data.message || "Failed to update user data.",
           duration: 2000,
+          variant: "destructive"
         })
       }
     } catch (e) {
@@ -132,7 +133,8 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
         toast.toast({
           title: "Edit Failed",
           description: message,
-          duration: 3000,
+          duration: 2000,
+          variant: "destructive"
         });
         setRespStatus(e.response.status);
       } else {
@@ -140,6 +142,7 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           title: "Edit Failed",
           description: (e as Error).message || "An unexpected error occurred.",
           duration: 2000,
+          variant: "destructive"
         });
       }
     } finally {

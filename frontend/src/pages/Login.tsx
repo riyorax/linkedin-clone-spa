@@ -66,6 +66,7 @@ const LoginPage = () => {
           title: "Login failed",
           description: response.data.message,
           duration: 3000,
+          variant: "destructive"
         })
       }
       refetchProfile();
@@ -75,6 +76,7 @@ const LoginPage = () => {
         title: "Login failed",
         description: (e as Error).message,
         duration: 3000,
+        variant: "destructive"
       })
     }
   }

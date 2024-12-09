@@ -29,7 +29,7 @@ export function RecommendationList({ profile }: RecommendationProps) {
                     </div>
                     <div>
                         <h2 className="text-sm sm:text-[12px] font-semibold">{profile.full_name}</h2>
-                        <p className="text-[10px] sm:text-sm text-gray-500">@{profile.username}</p>
+                        {/* <p className="text-[10px] sm:text-[10px] text-gray-500">@{profile.username}</p> */}
                         <Button
                             onClick={() => navigate(`/profile/${profile.id}`)}
                             className="mt-1 text-[10px] sm:text-sm w-full sm:w-auto border-2 border-bluelinkedin text-bluelinkedin bg-white rounded-full hover:bg-bluelinkedin hover:text-white hover:scale-105"

@@ -35,6 +35,7 @@ const Logout = () => {
           title: "Logout failed",
           description: res.data.message || "An unknown error occurred.",
           duration: 3000,
+          variant: "destructive"
         });
       }
     } catch (err) {
@@ -43,6 +44,7 @@ const Logout = () => {
         title: "Logout error",
         description: "An error occurred. Please try again.",
         duration: 3000,
+        variant: "destructive"
       });
     }
   }, [navigate, refetchProfile, socket, toast]);
