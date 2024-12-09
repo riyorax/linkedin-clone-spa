@@ -22,7 +22,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ users, isUsersLoading, select
             <div className="overflow-y-auto w-full py-3">
                 {users.map((user) => (
                     <button
-                        key={user.id} // Use 'id' from API
+                        key={user.id}
                         className={`w-full p-3 flex items-center gap-3 cursor-pointer ${selectedUser?.id === user.id ? "bg-neutral-100" : ""
                             }`}
                         onClick={() => setSelectedUser(user)}

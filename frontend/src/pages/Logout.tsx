@@ -7,9 +7,8 @@ import { useNavigate } from "react-router-dom";
 const Logout = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { refetchProfile, socket } = useProfile(); // Access the socket from the context
+  const { refetchProfile, socket } = useProfile();
 
-  // Function to handle logout
   const logout = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:3000/api/logout", {
@@ -17,7 +16,6 @@ const Logout = () => {
       });
 
       if (res.data.success) {
-        // Disconnect the socket if it exists
         if (socket) {
           socket.disconnect();
           console.log("Socket disconnected during logout.");

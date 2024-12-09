@@ -72,7 +72,6 @@ const ProfilePage: React.FC = () => {
 
   const handleUpdateProfile = (updatedData: Partial<ProfileData>) => {
     setProfileData((prev) => prev ? { ...prev, ...updatedData } : null);
-    // console.log("update:", updatedData);
   };
 
   const renderPage = () => {

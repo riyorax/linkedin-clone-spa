@@ -76,7 +76,6 @@ export const sendMessages = async (req, res) => {
 
         const newMessage = await chatService.sendMessages(senderId, receiverId, message);
 
-        // todo: realtime pake socket.io
         const receiverSocketIds = getReceiverSocketIds(receiverId);
         if (receiverSocketIds) {
             receiverSocketIds.forEach((socketId) => {

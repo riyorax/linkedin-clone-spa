@@ -8,6 +8,15 @@
   - [Technologies Used](#technologies-used)
   - [Features](#features)
   - [Screenshots](#screenshots)
+    - [Profile Test](#profile-test)
+    - [Feed Test](#feed-test)
+    - [Login](#login)
+    - [Register](#register)
+    - [Profile](#profile)
+    - [Feed](#feed)
+    - [Users](#users)
+    - [Connection Request](#connection-request)
+    - [Chat](#chat)
   - [Setup](#setup)
   - [Usage](#usage)
   - [Acknowledgements](#acknowledgements)
@@ -34,8 +43,33 @@
 
 
 ## Screenshots
-![Example screenshot](./img/screenshot.png)
-<!-- If you have screenshots you'd like to share, include them here. -->
+
+### Profile Test
+![Profile Test](./screenshots/profileTest.png)
+
+### Feed Test
+![Feed Test](./screenshots/feedTest.png)
+
+### Login
+![Login Page](./screenshots/loginPage.png)
+
+### Register
+![Register Page](./screenshots/registerPage.png)
+
+### Profile
+![Profile Page](./screenshots/profilePage.png)
+
+### Feed
+![Feed Page](./screenshots/feedPage.png)
+
+### Users
+![Users Page](./screenshots/usersPage.png)
+
+### Connection Request
+![Connection Request Page](./screenshots/connectionRequestPage.png)
+
+### Chat
+![Chat Page](./screenshots/chatsPage.png)
 
 
 ## Setup

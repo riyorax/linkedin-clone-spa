@@ -118,31 +118,6 @@ export const isFilledPassword = (req, res) => {
     }
 };
 
-// export const isFilledConfirmPassword = (req, res) => {
-//     if (!req.body.confirmPassword) {
-//         return res.status(200).json({
-//             success: false,
-//             message: "Missing required fields: confirmPassword",
-//             body: {
-//                 token: null,
-//             },
-//         });
-//     }
-// };
-
-
-// export const comparePassword = (req, res) => {
-//     if (req.body.password !== req.body.confirmPassword) {
-//         return res.status(200).json({
-//             success: false,
-//             message: "Passwords do not match",
-//             body: {
-//                 token: null,
-//             },
-//         });
-//     }
-// };
-
 export const emailExist = async (req, res) => {
     try {
         const existingUser = await userService.getUserByEmail(req.body.email);
@@ -203,7 +178,6 @@ export const validateRegister = async (req, res, next) => {
     if (await isFilledEmail(req, res)) return;
     if (await isFilledFullname(req, res)) return;
     if (await isFilledPassword(req, res)) return;
-    // if (await comparePassword(req, res)) return;
     if (await usernameExist(req, res)) return;
     if (await emailExist(req, res)) return;
 
@@ -248,7 +222,6 @@ export const validateFeedParam = async (req, res, next) => {
 };
 
 export const isFilledContent = (req, res, next) => {
-    // const userId = req.user.userId;
     const content = req.body.content;
     if (!content) {
         return res.status(200).json({

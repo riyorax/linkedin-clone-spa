@@ -116,7 +116,6 @@ export function EditProfileModal({ isOpen, onClose, userId, initialData, onProfi
           description: "User data updated successfully.",
           duration: 2000,
         })
-        // console.log(response.data.body);
         onProfileUpdate(response.data.body);
         onClose()
       } else {

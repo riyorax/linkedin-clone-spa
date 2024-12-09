@@ -18,7 +18,7 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
-let socketInstance: Socket | null = null; // Persistent socket instance
+let socketInstance: Socket | null = null;
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -81,7 +81,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useProfile = () => {
   const context = useContext(ProfileContext);
   if (!context) {

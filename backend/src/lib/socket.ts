@@ -13,17 +13,15 @@ const io = new Server(server, {
 });
 
 interface ConnectedUsers {
-  [userId: string]: Set<string>; // Map userId to a set of socket IDs
+  [userId: string]: Set<string>;
 }
 
 export function getReceiverSocketIds(userId: string): Set<string> {
   return connectedUsers[userId] || new Set();
 }
 
-// Store connected users and their socket IDs (in case of multiple tabs or devices)
 const connectedUsers: ConnectedUsers = {};
 
-// Active typing users (maps each user to the user they are typing to)
 const typingUsers: { [fromUserId: string]: string } = {};
 
 io.on("connection", (socket) => {
@@ -51,7 +49,7 @@ io.on("connection", (socket) => {
   // Listen for "typing" events
   socket.on("typing", ({ to }) => {
     if (!userId || !to) return;
-    typingUsers[userId] = to; // Track typing state
+    typingUsers[userId] = to;
     const receiverSocketIds = getReceiverSocketIds(to);
     receiverSocketIds.forEach((socketId) => {
       io.to(socketId).emit("userTyping", userId);
@@ -61,7 +59,7 @@ io.on("connection", (socket) => {
   // Listen for "stopTyping" events
   socket.on("stopTyping", ({ to }) => {
     if (!userId || !to) return;
-    delete typingUsers[userId]; // Remove typing state
+    delete typingUsers[userId]; 
     const receiverSocketIds = getReceiverSocketIds(to);
     receiverSocketIds.forEach((socketId) => {
       io.to(socketId).emit("userStopTyping", userId);
@@ -75,7 +73,6 @@ io.on("connection", (socket) => {
     if (userId && connectedUsers[userId]) {
       connectedUsers[userId].delete(socket.id);
 
-      // Clean up typing state if the user disconnects
       if (typingUsers[userId]) {
         const to = typingUsers[userId];
         delete typingUsers[userId];
@@ -85,7 +82,6 @@ io.on("connection", (socket) => {
         });
       }
 
-      // If no sockets are left for the user, remove them from connectedUsers
       if (connectedUsers[userId].size === 0) {
         delete connectedUsers[userId];
       }

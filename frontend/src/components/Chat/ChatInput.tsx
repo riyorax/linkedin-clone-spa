@@ -14,8 +14,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping, onStopTy
   useEffect(() => {
     if (text.trim()) {
       onTyping();
-
-      // Clear the previous timeout if any
+      
       if (typingTimeout) {
         clearTimeout(typingTimeout);
       }
@@ -29,7 +28,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping, onStopTy
       onStopTyping();
     }
 
-    // Cleanup on unmount or when text changes
+
     return () => {
       if (typingTimeout) {
         clearTimeout(typingTimeout);
@@ -38,8 +37,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping, onStopTy
   }, [text, onTyping, onStopTyping, typingTimeout]);
 
   async function sendMessage(e: React.FormEvent) {
-    e.preventDefault(); // Prevent page reload
-    if (!text.trim()) return; // Prevent empty messages
+    e.preventDefault();
+    if (!text.trim()) return;
     try {
       await onSendMessage(text);
       setText("");

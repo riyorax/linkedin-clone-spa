@@ -72,8 +72,8 @@ const ChatPage: React.FC = () => {
                 { withCredentials: true },
             );
             if (response.status === 200 && response.data.success) {
-                const newMessage = response.data.body.message; // The complete message object from the backend
-                setMessages((messages) => [...messages, newMessage]); // Add the new message to the state
+                const newMessage = response.data.body.message;
+                setMessages((messages) => [...messages, newMessage]);
 
                 try {
                     await axios.post(
@@ -136,12 +136,10 @@ const ChatPage: React.FC = () => {
         }
     }
 
-    // Fetch users on component mount
     useEffect(() => {
         getFriends();
     }, []);
 
-    // Manage subscriptions when receiverId changes
     useEffect(() => {
         getMessages(receiverId);
         subscribeToMessages();

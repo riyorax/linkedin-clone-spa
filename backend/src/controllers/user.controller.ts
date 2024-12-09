@@ -214,15 +214,12 @@ export const login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
 
-    // First, try to find the user by username
+    // Find user
     let user = await userService.getUserByUsername(identifier);
-
-    // If no user found by username, try finding by email
     if (!user) {
       user = await userService.getUserByEmail(identifier);
     }
 
-    // If user is still not found, return an error
     if (!user) {
       return res.status(200).json({
         success: false,
@@ -231,10 +228,9 @@ export const login = async (req, res) => {
       });
     }
 
-    // Compare the provided password with the stored password hash
+    // Check password
     const isMatch = await authService.comparePassword(password, user.password_hash);
 
-    // If password doesn't match, return an error
     if (!isMatch) {
       return res.status(200).json({
         success: false,
