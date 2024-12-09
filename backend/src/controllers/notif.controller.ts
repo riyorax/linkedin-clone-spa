@@ -51,6 +51,7 @@ export const sendNewFeedNotif = async (req, res) => {
     const userId = req.user.userId;
     const connections = await getAllConnections(userId);
     const connectionIds = connections.map((conn) => conn.to_id);
+    const fromUser = await getUserById(userId);
 
     const subscriptions =
       await notifService.getSubscriptionsByConnectionIds(connectionIds);
@@ -58,7 +59,7 @@ export const sendNewFeedNotif = async (req, res) => {
     const payload = JSON.stringify({
       type: "feed",
       title: "New Feed Post",
-      body: `Your connection has posted something new`,
+      body: `${fromUser} has posted something new`,
       tag: `feed-${userId}`,
       userId: userId,
       data: {
@@ -122,7 +123,7 @@ export const sendNewChatNotif = async (req, res) => {
 
     const subscriptions = await notifService.getSubscriptionsByConnectionIds([toId]) as push_subscriptions[];
 
-    if (!subscriptions || subscriptions.length === 0) {
+    if (!subscriptions) {
       return res.status(404).json({
         error: "Subscription not found for the target user",
       });
