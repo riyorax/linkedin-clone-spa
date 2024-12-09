@@ -12,10 +12,13 @@ RUN npm ci
 
 COPY --chown=node:node . .
 
+
 COPY ./.env.example ./.env
+
+RUN npm run build
+RUN npx prisma generate
+
 
 ENV PORT=3000
 
 EXPOSE 3000
-
-CMD ["node", "index.js"]
