@@ -9,9 +9,26 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import feedRouter from "./routes/feed.router";
 import path from "path";
-import { app, server } from "./lib/socket"
+import { app, server } from "./lib/socket";
+import webpush from "web-push";
+import notifRouter from "./routes/notif.router";
 
 dotenv.config();
+
+const vapidKeys = {
+  publicKey: process.env.VAPID_PUBLIC_KEY,
+  privateKey: process.env.VAPID_PRIVATE_KEY,
+};
+
+if (!vapidKeys.publicKey || !vapidKeys.privateKey) {
+  throw new Error("VAPID keys are not defined in the env file.");
+}
+
+webpush.setVapidDetails(
+  "mailto:13522061@std.stei.itb.ac.id",
+  vapidKeys.publicKey,
+  vapidKeys.privateKey,
+);
 
 const PORT = process.env.PORT || 3000;
 
@@ -30,8 +47,13 @@ app.use("/api", connectionRouter);
 app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
 app.use("/api", chatRouter);
-app.use("/image", express.static(path.resolve(__dirname, "../../upload/image")));
+app.use("/api", notifRouter);
+app.use(
+  "/image",
+  express.static(path.resolve(__dirname, "../../upload/image")),
+);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+

@@ -12,8 +12,13 @@ import ChatPage from "./pages/Chat";
 import { Toaster } from "@/components/ui/toaster";
 import { NotFoundPage } from "@/components/Error/NotFoundPage"
 import { ProfileProvider } from "@/context/ProfileContext";
+import { useEffect } from "react";
+import { initPushNotif } from "./utils/webpush";
 
 function App() {
+  useEffect(() => {
+    initPushNotif()
+  }, []) 
   return (
     <ProfileProvider>
       <Router>
