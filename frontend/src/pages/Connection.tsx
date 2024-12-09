@@ -118,7 +118,7 @@ const ConnectionPage: React.FC = () => {
             <div className="container mx-auto px-8 lg:px-40 space-y-2">
                 <div className="flex justify-between space-x-2">
                     <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">
-                        <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">{profile?.id === id ? "My" : "People's"} Connection</h1>
+                        <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">{String(profile?.id) === id ? "My" : "People's"} Connection</h1>
                         {loading ? (
                             <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">Loading...</p>
                         ) : error ? (

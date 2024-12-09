@@ -1,21 +1,18 @@
-FROM node:20-alpine
+# Stage 1: Build the frontend assets
+FROM node:20-alpine AS builder
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+WORKDIR /app
 
-WORKDIR /home/node/app
+COPY package*.json .
 
-USER node
+RUN npm install
 
-COPY --chown=node:node package*.json ./
+COPY . .
 
-RUN npm ci
+RUN npm run build
 
-COPY --chown=node:node . .
+FROM nginx
 
-RUN npm run dev
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-ENV PORT=3001
-
-EXPOSE 3001
-
-CMD ["npm", "run", "dev"]
+CMD [ "nginx", "-g", "daemon off;" ]

@@ -36,9 +36,9 @@ function App() {
             <Route path="/connection/list/:id" element={<ConnectionPage />} />
             <Route path="/users" element={<ListUserPage />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="*" element={<NotFoundPage />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
       </Router>

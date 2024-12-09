@@ -28,6 +28,16 @@ services:
       sh -c "npx prisma db push &&
              npm run prisma-seed &&
              npm run start"
+  frontend:
+    build:
+      context: ./frontend
+    container_name: wbd_frontend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - 3001:80
+    depends_on:
+      - backend
   # frontend:
   #   build: ./frontend
   #   ports:

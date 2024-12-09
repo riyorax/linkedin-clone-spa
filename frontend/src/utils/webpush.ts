@@ -1,7 +1,6 @@
 import axios from "axios";
-import dotenv from "dotenv";
 
-// dotenv.config();
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
 export async function initPushNotif() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
@@ -35,12 +34,6 @@ export async function initPushNotif() {
 }
 
 async function subscribeToPushNotif(registration: ServiceWorkerRegistration) {
-  // const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
-  // if(!VAPID_PUBLIC_KEY){
-  //   throw new Error("VAPID keys are not defined in the env file.");
-  // }
-
-  const VAPID_PUBLIC_KEY = "BOyyac14RWv52TCsLNu6lfJlCJdr49s91hOgc-_DyLvh0_ofnHtF9J76KnetD5HpwAiwFuWE2vszz2iEdab2kVE";
   const converted_vapid_public_key = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
 
   try {
