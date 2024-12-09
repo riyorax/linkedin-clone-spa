@@ -22,6 +22,7 @@
   - [Acknowledgements](#acknowledgements)
   - [Team Responsibilities](#team-responsibilities)
   - [Bonus](#bonus)
+  - [API Documentation](#api-documentation)
   - [Contributor](#contributor)
 
 ## General Information
@@ -110,6 +111,9 @@ To use it simply write this in the terminal
 - Connection Reccomendation
 - Typing Indicator
 - LinkedIn like UI/UX
+
+## API Documentation
+`http://localhost:3000/api-docs`
 
 ## Contributor
 | NIM      |            Nama            |
