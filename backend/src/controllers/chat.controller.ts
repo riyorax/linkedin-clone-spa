@@ -1,6 +1,7 @@
 import { getMutualConnection } from "../services/connection.service";
 import * as chatService from "../services/chat.service";
 import { getReceiverSocketIds, io } from "../lib/socket";
+import { getConnection } from "../services/connection.service";
 
 export const getUsersForSidebar = async (req, res) => {
     try {
@@ -27,6 +28,17 @@ export const getMessages = async (req, res) => {
     try {
         const { id:userToChatId } = req.params;
         const senderId = req.user.userId;
+
+        // Check if both connected
+        const isConnection = await getConnection(senderId, userToChatId);
+
+        if (!isConnection) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not connected with this user.",
+                error: null,
+            });
+        }
         
         const messages = await chatService.getMessages(senderId, userToChatId);
         res.status(200).json({
@@ -50,6 +62,17 @@ export const sendMessages = async (req, res) => {
         const { id:receiverId } = req.params;
         const senderId = parseInt(req.user.userId);
         const { message } = req.body;
+
+        // Check if both connected
+        const isConnection = await getConnection(senderId, receiverId);
+
+        if (!isConnection) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not connected with this user.",
+                error: null,
+            });
+        }
 
         const newMessage = await chatService.sendMessages(senderId, receiverId, message);
 

@@ -149,6 +149,18 @@ export const deleteConnection = async (fromId: number, toId: number) => {
         },
       });
 
+      if (deleted) {
+        // delete chat from both users
+        await tx.chat.deleteMany({
+          where: {
+            OR: [
+              { from_id: fromId, to_id: toId },
+              { from_id: toId, to_id: fromId },
+            ],
+          },
+        });
+      }
+
       return deleted;
     });
 
