@@ -75,7 +75,7 @@ const RecommendSidebar = () => {
                             <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-red-500">{error}</p>
                         ) : (
                             <>
-                                <p className="text-sm text-gray-500 py-2.5">Here is recommendation for you</p>
+                                <p className="text-sm text-gray-500 py-2.5 text-center">Here is recommendation for you</p>
                                 <ul>
                                     {recommendation.map((profile) => (
                                         <li className="border-none" key={profile.id}>

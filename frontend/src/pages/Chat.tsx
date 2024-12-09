@@ -4,6 +4,7 @@ import { useProfile } from "@/context/ProfileContext";
 import ChatSidebar from "@/components/Chat/ChatSidebar";
 import NoChatSelected from "@/components/Chat/NoChatSelected";
 import ChatContainer from "@/components/Chat/ChatContainer";
+import { useNavigate } from "react-router-dom";
 
 
 interface User {
@@ -22,7 +23,8 @@ const ChatPage: React.FC = () => {
     const [isUsersLoading, setIsUsersLoading] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
     const [typingUsers, setTypingUsers] = useState<string[]>([]);
-    const { socket } = useProfile();
+    const { socket, profile } = useProfile();
+    const navigate = useNavigate();
 
     async function getFriends() {
         setIsUsersLoading(true);
@@ -75,18 +77,18 @@ const ChatPage: React.FC = () => {
 
                 try {
                     await axios.post(
-                      "http://localhost:3000/api/push_notification/chat",
-                      {
-                        toId: receiverId,
-                        message: message,
-                      },
-                      {
-                        withCredentials: true,
-                      },
+                        "http://localhost:3000/api/push_notification/chat",
+                        {
+                            toId: receiverId,
+                            message: message,
+                        },
+                        {
+                            withCredentials: true,
+                        },
                     );
-                  } catch (notifError) {
+                } catch (notifError) {
                     console.error("Failed to send notification:", notifError);
-                  }
+                }
             } else {
                 throw new Error(response.data.message || "Failed to send message.");
             }
@@ -97,7 +99,7 @@ const ChatPage: React.FC = () => {
 
     function subscribeToMessages() {
         if (!loggedInUser || !selectedUser || !loggedInUser.id || !selectedUser.id) return;
-    
+
         // Subscribe to "newMessage" events for the selected user
         if (socket) {
             socket.on("newMessage", (message) => {
@@ -108,7 +110,7 @@ const ChatPage: React.FC = () => {
             console.log("Subscribed to new messages for user:", selectedUser.id);
         }
     }
-    
+
     function unsubscribeFromMessages() {
         if (socket) {
             socket.off("newMessage"); // Unsubscribe from "newMessage" events
@@ -133,12 +135,12 @@ const ChatPage: React.FC = () => {
             socket.off("userStopTyping");
         }
     }
-    
+
     // Fetch users on component mount
     useEffect(() => {
         getFriends();
     }, []);
-    
+
     // Manage subscriptions when receiverId changes
     useEffect(() => {
         getMessages(receiverId);
@@ -161,42 +163,45 @@ const ChatPage: React.FC = () => {
         return () => unsubscribeFromTypingEvents();
     }, [socket]);
 
-
-    return (
-        <div className="h-full">
-            <div className="container flex mx-auto px-8 lg:px-40 space-x-2">
-                <div className="bg-neutral-50 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
-                    <div className="flex h-full rounded-lg overflow-hidden">
-                        <ChatSidebar
-                            users={users}
-                            isUsersLoading={isUsersLoading}
-                            selectedUser={selectedUser}
-                            setSelectedUser={(user) => {
-                                setSelectedUser(user);
-                                setReceiverId(user?.id || null);
-                            }}
-                        />
-
-                        {!selectedUser ? (
-                            <NoChatSelected />
-                        ) : (
-                            <ChatContainer
-                            messages={messages}
-                            isMessagesLoading={isMessagesLoading}
-                            selectedUser={selectedUser}
-                            authUser={loggedInUser}
-                            onSendMessage={sendMessage}
-                            setSelectedUser={setSelectedUser}
-                            typingUsers={typingUsers}
-                            onTyping={handleTyping}
-                            onStopTyping={handleStopTyping}
+    if (!profile) {
+        navigate(`/login`);
+    } else {
+        return (
+            <div className="h-full">
+                <div className="container flex mx-auto px-8 lg:px-40 space-x-2">
+                    <div className="bg-neutral-50 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
+                        <div className="flex h-full rounded-lg overflow-hidden">
+                            <ChatSidebar
+                                users={users}
+                                isUsersLoading={isUsersLoading}
+                                selectedUser={selectedUser}
+                                setSelectedUser={(user) => {
+                                    setSelectedUser(user);
+                                    setReceiverId(user?.id || null);
+                                }}
                             />
-                        )}
+
+                            {!selectedUser ? (
+                                <NoChatSelected />
+                            ) : (
+                                <ChatContainer
+                                    messages={messages}
+                                    isMessagesLoading={isMessagesLoading}
+                                    selectedUser={selectedUser}
+                                    authUser={loggedInUser}
+                                    onSendMessage={sendMessage}
+                                    setSelectedUser={setSelectedUser}
+                                    typingUsers={typingUsers}
+                                    onTyping={handleTyping}
+                                    onStopTyping={handleStopTyping}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 };
 
 export default ChatPage;

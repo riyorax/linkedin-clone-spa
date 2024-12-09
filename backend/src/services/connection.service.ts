@@ -241,8 +241,9 @@ export const getConnectionRecommendations = async (userId: bigint) => {
     );
 
     const recommendations = [...secondDegreeUsers, ...thirdDegreeUsers];
+    const top10Recommendations = recommendations.slice(0, 10);
 
-    return recommendations;
+    return top10Recommendations;
   } catch (error) {
     throw error;
   }

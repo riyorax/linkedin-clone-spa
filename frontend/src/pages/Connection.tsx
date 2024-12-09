@@ -17,7 +17,8 @@ const ConnectionPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState<number | null>(null);
     const [access, setAccess] = useState<string>('');
-    const { profile } = useProfile();
+    const [name, setName] = useState<string>('');
+    const { refetchProfile } = useProfile()
     const toast = useToast();
 
     useEffect(() => {
@@ -40,6 +41,8 @@ const ConnectionPage: React.FC = () => {
                 if (response.status === 200 && response.data.success) {
                     const access = response.data.body.access;
                     setAccess(access);
+                    const name = response.data.body.name;
+                    setName(name);
                     const apiData: Connection[] = response.data.body.listConnection;
                     const mappedData = apiData.map((item) => ({
                         id: item.id,
@@ -70,6 +73,7 @@ const ConnectionPage: React.FC = () => {
 
     const handleAction = async (id: string) => {
         try {
+            refetchProfile();
             setLoading(true);
             const response = await axios.delete(`http://localhost:3000/api/connection/unconnect/${id}`, {
                 withCredentials: true
@@ -86,6 +90,7 @@ const ConnectionPage: React.FC = () => {
                     title: "Failed",
                     description: "unconnect connection",
                     duration: 2000,
+                    variant: "destructive"
                 })
             }
         } catch (e) {
@@ -118,7 +123,7 @@ const ConnectionPage: React.FC = () => {
             <div className="container mx-auto px-8 lg:px-40 space-y-2">
                 <div className="flex justify-between space-x-2">
                     <Card className="border-gray-300 w-full text-bluelinkedin overflow-hidden">
-                        <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">{profile?.id === id ? "My" : "People's"} Connection</h1>
+                        <h1 className="p-4 text-sm sm:text-xl font-semibold text-center">{name}'s Connection</h1>
                         {loading ? (
                             <p className="mb-10 sm:mt-16 text-[10px] sm:text-sm text-center text-muted-foreground">Loading...</p>
                         ) : error ? (

@@ -57,6 +57,7 @@ const RegisterPage = () => {
         title: "Passwords do not match",
         description: "Please make sure your passwords match",
         duration: 2000,
+        variant: "destructive"
       })
     }
 
@@ -89,6 +90,7 @@ const RegisterPage = () => {
           title: "Login failed",
           description: response.data.message,
           duration: 3000,
+          variant: "destructive"
         })
       }
     }
@@ -97,6 +99,7 @@ const RegisterPage = () => {
         title: "Login failed",
         description: (e as Error).message,
         duration: 3000,
+        variant: "destructive"
       })
     }
   }

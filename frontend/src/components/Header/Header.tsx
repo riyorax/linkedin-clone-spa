@@ -27,7 +27,7 @@ interface Profile {
 }
 
 export function Header() {
-    const { profile, isLoading } = useProfile();
+    const { profile, isLoading, refetchProfile } = useProfile();
     const navigate = useNavigate();
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState("");
@@ -91,6 +91,7 @@ export function Header() {
                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                             } hover:text-black`
                         }
+                        onClick={() => refetchProfile()}
                     >
                         <div className="flex flex-col items-center text-[10px]">
                             <svg
@@ -115,6 +116,7 @@ export function Header() {
                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                             } hover:text-black`
                         }
+                        onClick={() => refetchProfile()}
                     >
                         <div className="flex flex-col items-center text-[10px]">
                             <svg
@@ -138,6 +140,7 @@ export function Header() {
                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                             } hover:text-black`
                         }
+                        onClick={() => refetchProfile()}
                     >
                         <div className="flex flex-col items-center text-[10px]">
                             <GitPullRequest />
@@ -151,41 +154,20 @@ export function Header() {
                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                             } hover:text-black`
                         }
+                        onClick={() => refetchProfile()}
                     >
                         <div className="flex flex-col items-center text-[10px]">
                             <User />
                             Users
                         </div>
                     </NavLink>
-                    {/* Notification */}
-                    <NavLink
-                        to="/notification"
-                        className={({ isActive }) =>
-                            `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
-                            } hover:text-black`
-                        }
-                    >
-                        <div className="flex flex-col items-center text-[10px]">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="mercado-match"
-                                width="20"
-                                height="20"
-                                focusable="false"
-                            >
-                                <path d="M22 19h-8.28a2 2 0 11-3.44 0H2v-1a4.52 4.52 0 011.17-2.83l1-1.17h15.7l1 1.17A4.42 4.42 0 0122 18zM18.21 7.44A6.27 6.27 0 0012 2a6.27 6.27 0 00-6.21 5.44L5 13h14z"></path>
-                            </svg> Notification
-                        </div>
-                    </NavLink>
-                    {/* Message */}
                     <NavLink
                         to="/chat"
                         className={({ isActive }) =>
                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                             } hover:text-black`
                         }
+                        onClick={() => refetchProfile()}
                     >
                         <div className="flex flex-col items-center text-[10px]">
                             <svg
@@ -204,7 +186,10 @@ export function Header() {
                 </nav>
                 <div className="flex items-center space-x-3">
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger
+                            onClick={() => refetchProfile()}
+                            asChild
+                        >
                             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                                 <Avatar className="w-8 h-8 flex items-center justify-center object-cover rounded-full border-2 border-white shadow-md bg-neutral-100">
                                     <AvatarImage src={profile.profile_photo} alt={profile.name} />
@@ -223,7 +208,7 @@ export function Header() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                                <Link to={`/profile/${profile.id}`} className="flex-shrink-0 text-[10px] sm:text-sm w-full">Profile
+                                <Link onClick={() => refetchProfile()} to={`/profile/${profile.id}`} className="flex-shrink-0 text-[10px] sm:text-sm w-full">Profile
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
@@ -248,6 +233,7 @@ export function Header() {
                                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                                             } hover:text-black`
                                         }
+                                        onClick={() => refetchProfile()}
                                     >
                                         <div className="flex items-center justify-between text-xs">
                                             <svg
@@ -274,6 +260,7 @@ export function Header() {
                                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                                             } hover:text-black`
                                         }
+                                        onClick={() => refetchProfile()}
                                     >
                                         <div className="flex items-center justify-between text-xs">
                                             <svg
@@ -300,6 +287,7 @@ export function Header() {
                                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                                             } hover:text-black`
                                         }
+                                        onClick={() => refetchProfile()}
                                     >
                                         <div className="flex items-center justify-between text-xs">
                                             <GitPullRequest className="h-4 w-4" />
@@ -315,34 +303,11 @@ export function Header() {
                                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                                             } hover:text-black`
                                         }
+                                        onClick={() => refetchProfile()}
                                     >
                                         <div className="flex items-center justify-between text-xs">
                                             <User className="h-4 w-4" />
                                             Users
-                                        </div>
-                                    </NavLink>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    {/* Message */}
-                                    <NavLink
-                                        to="/notification"
-                                        className={({ isActive }) =>
-                                            `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
-                                            } hover:text-black`
-                                        }
-                                    >
-                                        <div className="flex items-center justify-between text-xs">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                className="mercado-match"
-                                                width="16"
-                                                height="16"
-                                                focusable="false"
-                                            >
-                                                <path d="M22 19h-8.28a2 2 0 11-3.44 0H2v-1a4.52 4.52 0 011.17-2.83l1-1.17h15.7l1 1.17A4.42 4.42 0 0122 18zM18.21 7.44A6.27 6.27 0 0012 2a6.27 6.27 0 00-6.21 5.44L5 13h14z"></path>
-                                            </svg> Notification
                                         </div>
                                     </NavLink>
                                 </DropdownMenuItem>
@@ -354,6 +319,7 @@ export function Header() {
                                             `flex flex-col items-center justify-center rounded-md ${isActive ? "text-black" : "text-gray-400"
                                             } hover:text-black`
                                         }
+                                        onClick={() => refetchProfile()}
                                     >
                                         <div className="flex items-center justify-between text-xs">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" className="mercado-match" width="16" height="16" focusable="false">

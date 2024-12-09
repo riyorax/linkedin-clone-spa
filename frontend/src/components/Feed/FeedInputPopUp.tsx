@@ -4,6 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import FeedPost from "./FeedPost";
+import { useNavigate } from "react-router-dom";
+import { useProfile } from "@/context/ProfileContext";
 
 const addFeeds = async ({ content }: { content: string }) => {
   const response = await axios.post(
@@ -31,12 +33,14 @@ const addFeeds = async ({ content }: { content: string }) => {
   return response.data;
 };
 
-const FeedInputPopUp: React.FC = ({}) => {
+const FeedInputPopUp: React.FC = ({ }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
   const toast = useToast();
+  const navigate = useNavigate();
+  const { refetchProfile } = useProfile();
 
   useEffect(() => {
     if (isOpen && textareaRef.current) {
@@ -55,13 +59,26 @@ const FeedInputPopUp: React.FC = ({}) => {
         description: "Your post has been published!",
       });
     },
-    onError: (error) => {
-      toast.toast({
-        title: "Error",
-        description: error.message || "Failed to create post. Please try again.",
-        variant: "destructive",
-      });
-    },
+    onError: (e) => {
+      if (axios.isAxiosError(e) && e.response) {
+        const message = e.response.data.message || "An error occurred";
+        toast.toast({
+          title: "Failed",
+          description: message,
+          duration: 3000,
+          variant: "destructive"
+        });
+      } else {
+        toast.toast({
+          title: "Failed",
+          description: (e as Error).message || "An unexpected error occurred.",
+          duration: 2000,
+          variant: "destructive"
+        });
+      }
+      refetchProfile();
+      navigate(`/login`)
+    }
   });
 
   return (
