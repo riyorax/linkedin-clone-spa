@@ -72,6 +72,21 @@ const ChatPage: React.FC = () => {
             if (response.status === 200 && response.data.success) {
                 const newMessage = response.data.body.message; // The complete message object from the backend
                 setMessages((messages) => [...messages, newMessage]); // Add the new message to the state
+
+                try {
+                    await axios.post(
+                      "http://localhost:3000/api/push_notification/chat",
+                      {
+                        toId: receiverId,
+                        message: message,
+                      },
+                      {
+                        withCredentials: true,
+                      },
+                    );
+                  } catch (notifError) {
+                    console.error("Failed to send notification:", notifError);
+                  }
             } else {
                 throw new Error(response.data.message || "Failed to send message.");
             }
