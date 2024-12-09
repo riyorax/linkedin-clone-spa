@@ -11,8 +11,12 @@ COPY . .
 
 RUN npm run build
 
+# Stage 2: Serve with nginx
 FROM nginx
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-CMD [ "nginx", "-g", "daemon off;" ]
+# Add custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+CMD ["nginx", "-g", "daemon off;"]
