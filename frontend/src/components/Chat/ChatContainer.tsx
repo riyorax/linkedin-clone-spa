@@ -10,9 +10,10 @@ interface ChatContainerProps {
     selectedUser: any | null;
     authUser: { id: number; username: string; name: string; profile_photo: string } | null;
     onSendMessage: (message: string) => Promise<void>;
+    setSelectedUser: (user: any | null) => void;
 }
 
-const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoading, selectedUser, authUser, onSendMessage }) => {
+const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoading, selectedUser, authUser, onSendMessage, setSelectedUser }) => {
     const messageEndRef = useRef(null);
 
     // Scroll to the bottom whenever the messages array changes
@@ -34,7 +35,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
 
     return (
         <div className="flex-1 flex flex-col overflow-auto">
-            <ChatHeader selectedUser={selectedUser} setSelectedUser={() => { }} />
+            <ChatHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} />
 
             <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
                 {messages.map((message) => (

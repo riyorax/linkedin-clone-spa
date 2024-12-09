@@ -140,6 +140,7 @@ const ChatPage: React.FC = () => {
                             selectedUser={selectedUser}
                             authUser={loggedInUser}
                             onSendMessage={sendMessage}
+                            setSelectedUser={setSelectedUser}
                             />
                         )}
                     </div>
