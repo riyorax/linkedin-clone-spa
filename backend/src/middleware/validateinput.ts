@@ -76,6 +76,25 @@ export const isFilledFullname = (req, res) => {
     }
 };
 
+export const isFilledIdentifier = (req, res) => {
+    if (!req.body.identifier) {
+        return res.status(200).json({
+            success: false,
+            message: "Missing required fields: identifier",
+            error: null,
+        });
+    }
+    else {
+        if (req.body.identifier.length > 255) {
+            return res.status(200).json({
+                success: false,
+                message: "Identifier is too long",
+                error: null,
+            });
+        }
+    }
+};
+
 export const isFilledPassword = (req, res) => {
     if (!req.body.password) {
         return res.status(200).json({
@@ -192,7 +211,7 @@ export const validateRegister = async (req, res, next) => {
 };
 
 export const validateLogin = async (req, res, next) => {
-    if (await isFilledEmail(req, res)) return;
+    if (await isFilledIdentifier(req, res)) return;
     if (await isFilledPassword(req, res)) return;
 
     next();

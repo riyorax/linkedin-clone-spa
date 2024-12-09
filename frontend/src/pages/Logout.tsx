@@ -28,6 +28,10 @@ const Logout = () => {
           description: "Redirecting to the login page...",
           duration: 2000,
         });
+
+        // sleep for 1 second before redirecting
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
         refetchProfile();
         navigate("/login");
       } else {
@@ -53,6 +57,7 @@ const Logout = () => {
     logout();
   }, [logout]);
 
+  
   return null;
 };
 
