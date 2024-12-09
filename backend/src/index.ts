@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, Router } from "express";
 import userRouter from "./routes/user.router";
 import profileRouter from "./routes/profile.router";
 import connectionRouter from "./routes/connection.router";
@@ -36,9 +36,17 @@ const corsOptions = {
   origin: "http://localhost:3001",
   credentials: true,
 };
+
+const healthRouter = Router();
+healthRouter.get("/", (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "healthy"
+  });
+});
+
 app.use(cors(corsOptions));
 app.use(cookieParser());
-
 app.use(express.json());
 
 app.use("/api", userRouter);
@@ -48,6 +56,8 @@ app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
 app.use("/api", chatRouter);
 app.use("/api", notifRouter);
+app.use("/health", healthRouter);
+
 app.use(
   "/image",
   express.static(path.resolve(__dirname, "../../upload/image")),
@@ -56,4 +66,3 @@ app.use(
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

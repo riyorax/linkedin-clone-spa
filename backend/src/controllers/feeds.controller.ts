@@ -5,6 +5,13 @@ import '../utils/bigIntUtils';
 
 export const getFeedsPaginated = async (req, res) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({
+              success: false,
+              message: "You are not authenticated",
+              error: null,
+            });
+          }
         const limit = parseInt(req.query.limit) || 10;
         const cursor = req.query.cursor ? parseInt(req.query.cursor) : undefined;
         const userId = req.user.userId;
@@ -15,8 +22,8 @@ export const getFeedsPaginated = async (req, res) => {
             success: true,
             message: "Feeds fetched successfully",
             body: {
-                cursor: nextCursor,
-                feeds
+                cursor: nextCursor || null,
+                feeds: feeds || [],
             }
         });
     } catch (e) {
@@ -39,6 +46,14 @@ export const addNewFeed = async (req, res) => {
         
         const { content } = req.body;
         const { userId } = req.user;
+        
+        if (content.length > 280) {
+            return res.status(400).json({
+              success: false,
+              message: "Content exceeds maximum length of 280 characters",
+              error: null,
+            });
+        }
 
         const newfeed = await feedsService.insertNewFeed(content, userId);
 
