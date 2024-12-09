@@ -21,6 +21,7 @@
   - [Usage](#usage)
   - [Acknowledgements](#acknowledgements)
   - [Team Responsibilities](#team-responsibilities)
+  - [Bonus](#bonus)
   - [Contributor](#contributor)
 
 ## General Information
@@ -104,6 +105,11 @@ To use it simply write this in the terminal
 |                 | Halaman Permintaan Koneksi | 13522116 |
 |                 | Halaman Chat               | 13522114 |
 |                 | Notifikasi                 | 13522061 |
+
+## Bonus
+- Connection Reccomendation
+- Typing Indicator
+- LinkedIn like UI/UX
 
 ## Contributor
 | NIM      |            Nama            |
