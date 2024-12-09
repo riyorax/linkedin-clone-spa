@@ -1,19 +1,49 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Send } from "lucide-react";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => Promise<void>;
+  onTyping: () => void;
+  onStopTyping: () => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping, onStopTyping  }) => {
   const [text, setText] = useState<string>("");
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (text.trim()) {
+      onTyping();
+
+      // Clear the previous timeout if any
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+
+      const timeout = setTimeout(() => {
+        onStopTyping();
+      }, 3000);
+      
+      setTypingTimeout(timeout);
+    } else {
+      onStopTyping();
+    }
+
+    // Cleanup on unmount or when text changes
+    return () => {
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+    };
+  }, [text, onTyping, onStopTyping, typingTimeout]);
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault(); // Prevent page reload
     if (!text.trim()) return; // Prevent empty messages
     try {
-      await onSendMessage(text); // Call parent function
-      setText(""); // Clear input
+      await onSendMessage(text);
+      setText("");
+      onStopTyping();
     } catch (error) {
       console.error("Failed to send message:", error);
     }

@@ -23,6 +23,9 @@ export function getReceiverSocketIds(userId: string): Set<string> {
 // Store connected users and their socket IDs (in case of multiple tabs or devices)
 const connectedUsers: ConnectedUsers = {};
 
+// Active typing users (maps each user to the user they are typing to)
+const typingUsers: { [fromUserId: string]: string } = {};
+
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId as string;
 
@@ -34,9 +37,9 @@ io.on("connection", (socket) => {
     console.log(`User connected: ${userId}, Socket ID: ${socket.id}`);
   }
 
-  // Listen for new message events
+  // Listen for "newMessage" events
   socket.on("newMessage", (message) => {
-    const { to, from, content } = message; 
+    const { to, from, content } = message;
     const receiverSocketIds = connectedUsers[to];
     if (receiverSocketIds) {
       receiverSocketIds.forEach((socketId) => {
@@ -45,11 +48,44 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Listen for "typing" events
+  socket.on("typing", ({ to }) => {
+    if (!userId || !to) return;
+    typingUsers[userId] = to; // Track typing state
+    const receiverSocketIds = getReceiverSocketIds(to);
+    receiverSocketIds.forEach((socketId) => {
+      io.to(socketId).emit("userTyping", userId);
+    });
+  });
+
+  // Listen for "stopTyping" events
+  socket.on("stopTyping", ({ to }) => {
+    if (!userId || !to) return;
+    delete typingUsers[userId]; // Remove typing state
+    const receiverSocketIds = getReceiverSocketIds(to);
+    receiverSocketIds.forEach((socketId) => {
+      io.to(socketId).emit("userStopTyping", userId);
+    });
+  });
+
   // Handle disconnection
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
+
     if (userId && connectedUsers[userId]) {
       connectedUsers[userId].delete(socket.id);
+
+      // Clean up typing state if the user disconnects
+      if (typingUsers[userId]) {
+        const to = typingUsers[userId];
+        delete typingUsers[userId];
+        const receiverSocketIds = getReceiverSocketIds(to);
+        receiverSocketIds.forEach((socketId) => {
+          io.to(socketId).emit("userStopTyping", userId);
+        });
+      }
+
+      // If no sockets are left for the user, remove them from connectedUsers
       if (connectedUsers[userId].size === 0) {
         delete connectedUsers[userId];
       }

@@ -21,7 +21,8 @@ const ChatPage: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [isUsersLoading, setIsUsersLoading] = useState(false);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
-    const { socket } = useProfile(); // Access the socket from the context
+    const [typingUsers, setTypingUsers] = useState<string[]>([]);
+    const { socket } = useProfile();
 
     async function getFriends() {
         setIsUsersLoading(true);
@@ -85,7 +86,6 @@ const ChatPage: React.FC = () => {
         // Subscribe to "newMessage" events for the selected user
         if (socket) {
             socket.on("newMessage", (message) => {
-                // Check if the message belongs to the current chat
                 if (message.from_id === selectedUser.id || message.to_id === selectedUser.id) {
                     setMessages((prevMessages) => [...prevMessages, message]);
                 }
@@ -98,6 +98,24 @@ const ChatPage: React.FC = () => {
         if (socket) {
             socket.off("newMessage"); // Unsubscribe from "newMessage" events
             console.log("Unsubscribed from new messages");
+        }
+    }
+
+    function subscribeToTypingEvents() {
+        if (socket) {
+            socket.on("userTyping", (userId) => {
+                setTypingUsers((prev) => (prev.includes(userId) ? prev : [...prev, userId]));
+            });
+            socket.on("userStopTyping", (userId) => {
+                setTypingUsers((prev) => prev.filter((id) => id !== userId));
+            });
+        }
+    }
+
+    function unsubscribeFromTypingEvents() {
+        if (socket) {
+            socket.off("userTyping");
+            socket.off("userStopTyping");
         }
     }
     
@@ -114,7 +132,20 @@ const ChatPage: React.FC = () => {
             unsubscribeFromMessages();
         };
     }, [receiverId]);
-    
+
+    const handleTyping = () => {
+        if (socket && receiverId) socket.emit("typing", { to: receiverId });
+    };
+
+    const handleStopTyping = () => {
+        if (socket && receiverId) socket.emit("stopTyping", { to: receiverId });
+    };
+
+    useEffect(() => {
+        subscribeToTypingEvents();
+        return () => unsubscribeFromTypingEvents();
+    }, [socket]);
+
 
     return (
         <div className="h-full">
@@ -141,6 +172,9 @@ const ChatPage: React.FC = () => {
                             authUser={loggedInUser}
                             onSendMessage={sendMessage}
                             setSelectedUser={setSelectedUser}
+                            typingUsers={typingUsers}
+                            onTyping={handleTyping}
+                            onStopTyping={handleStopTyping}
                             />
                         )}
                     </div>

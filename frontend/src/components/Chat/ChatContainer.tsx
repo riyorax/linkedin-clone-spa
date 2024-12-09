@@ -11,12 +11,15 @@ interface ChatContainerProps {
     authUser: { id: number; username: string; name: string; profile_photo: string } | null;
     onSendMessage: (message: string) => Promise<void>;
     setSelectedUser: (user: any | null) => void;
+    typingUsers: string[];
+    onTyping: () => void;
+    onStopTyping: () => void;
 }
 
-const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoading, selectedUser, authUser, onSendMessage, setSelectedUser }) => {
+const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoading, selectedUser, authUser, onSendMessage, setSelectedUser, typingUsers, onTyping, onStopTyping, }) => {
     const messageEndRef = useRef(null);
+    const isTyping = typingUsers.includes(selectedUser.id);
 
-    // Scroll to the bottom whenever the messages array changes
     useEffect(() => {
         if (messageEndRef.current && messages) {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -26,16 +29,16 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
     if (isMessagesLoading) {
         return (
             <div className="flex-1 flex flex-col overflow-auto">
-                <ChatHeader selectedUser={selectedUser} setSelectedUser={() => { }} />
+                <ChatHeader selectedUser={selectedUser} setSelectedUser={selectedUser} typing={isTyping} />
                 <ChatSkeleton />
-                <ChatInput onSendMessage={onSendMessage} />
+                <ChatInput onSendMessage={onSendMessage} onTyping={onTyping} onStopTyping={onStopTyping} />
             </div>
         );
     }
 
     return (
         <div className="flex-1 flex flex-col overflow-auto">
-            <ChatHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} />
+            <ChatHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser}  typing={isTyping} />
 
             <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
                 {messages.map((message) => (
@@ -69,7 +72,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isMessagesLoadi
                 ))}
             </div>
 
-            <ChatInput onSendMessage={onSendMessage} />
+            <ChatInput onSendMessage={onSendMessage} onTyping={onTyping} onStopTyping={onStopTyping} />
         </div>
     );
 };
