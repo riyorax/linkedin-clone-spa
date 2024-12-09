@@ -35,8 +35,9 @@ export const getAllUsers = async (req, res) => {
     })
   } catch (e) {
     res.status(500).json({
-      error: "Internal Server Error",
-      message: e.message || "Something went wrong while fetching feeds"
+      success: false,
+      message: e.message || "Something went wrong while fetching users.",
+      error: e,
     })
   }
 }
@@ -87,7 +88,6 @@ export const getUserById = async (req, res) => {
     const id = req.params.id;
     const user = await userService.getUserById(id);
     const feed = await feedService.getFeedProfile(id);
-    console.log("here");
     if (!user) {
       return res.status(404).json({
         success: false,

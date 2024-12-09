@@ -28,8 +28,9 @@ export const getFeedsPaginated = async (req, res) => {
         });
     } catch (e) {
         res.status(500).json({
-            error: "Internal Server Error",
-            message: e.message || "Something went wrong while fetching feeds"
+            success: false,
+            message: e.message || "Something went wrong while fetching feeds",
+            error: e,
         })
     }
 }

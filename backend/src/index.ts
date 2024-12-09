@@ -12,6 +12,7 @@ import path from "path";
 import { app, server } from "./lib/socket";
 import webpush from "web-push";
 import notifRouter from "./routes/notif.router";
+import { setupSwagger } from "./lib/swagger";
 
 dotenv.config();
 
@@ -62,6 +63,8 @@ app.use(
   "/image",
   express.static(path.resolve(__dirname, "../../upload/image")),
 );
+
+setupSwagger(app);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
