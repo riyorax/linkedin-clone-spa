@@ -15,9 +15,9 @@ COPY --chown=node:node . .
 
 COPY ./.env.example ./.env
 
-RUN npm run build
 RUN npx prisma generate
 
+RUN npm run build
 
 ENV PORT=3000
 
