@@ -38,17 +38,14 @@ const corsOptions = {
   credentials: true,
 };
 
-const healthRouter = Router();
-healthRouter.get("/health", (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: "healthy"
-  });
-});
-
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
+
+
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({ success: true, message: "healthy" });
+});
 
 app.use("/api", userRouter);
 app.use("/api", profileRouter);
@@ -57,7 +54,7 @@ app.use("/api", connectionRequestRouter);
 app.use("/api", feedRouter);
 app.use("/api", chatRouter);
 app.use("/api", notifRouter);
-app.use("/health", healthRouter);
+
 
 app.use(
   "/image",
