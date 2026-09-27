@@ -108,7 +108,7 @@ To use it simply write this in the terminal
 |                 | Notifikasi                 | 13522061 |
 
 ## Bonus
-- Connection Reccomendation
+- Connection Recommendation
 - Typing Indicator
 - LinkedIn like UI/UX
 
